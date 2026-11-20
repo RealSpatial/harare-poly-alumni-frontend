@@ -41,7 +41,8 @@ export default function HODDashboard() {
             return;
         }
 
-        fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/hod/stats', {
+        // FIX 1: Cleaned the API URL (removed markdown brackets)
+        fetch('https://harare-poly-api.onrender.com/api/hod/stats', {
             headers: { 'Authorization': `Bearer ${token}` }
         })
             .then(async res => {
@@ -101,15 +102,18 @@ export default function HODDashboard() {
     return (
         <div className="min-h-screen bg-slate-50 font-sans pb-20">
 
+            {/* FIX 2: Responsive Mobile Header */}
             <nav className="bg-white shadow-sm border-b sticky top-0 z-40" style={{ borderColor: hpDarkBlue }}>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                        <a href="/" className="text-gray-500 hover:text-blue-800 transition-colors"><ArrowLeft size={24} /></a>
-                        <span className="font-bold text-xl tracking-tight" style={{ color: hpDarkBlue }}>
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+                    <div className="flex items-center overflow-hidden">
+                        <a href="/" className="text-gray-500 hover:text-blue-800 transition-colors mr-2 shrink-0">
+                            <ArrowLeft size={24} />
+                        </a>
+                        <span className="font-bold text-lg sm:text-xl tracking-tight truncate block" style={{ color: hpDarkBlue }}>
                             Harare Polytechnic <span className="font-light">Departmental Analytics</span>
                         </span>
                     </div>
-                    <button onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('role'); window.location.href = '/login'; }} className="text-sm font-medium text-gray-500 hover:text-red-600 transition-colors">Sign Out</button>
+                    <button onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('role'); window.location.href = '/login'; }} className="text-sm font-medium text-gray-500 hover:text-red-600 transition-colors shrink-0 whitespace-nowrap ml-2">Sign Out</button>
                 </div>
             </nav>
 
@@ -152,9 +156,7 @@ export default function HODDashboard() {
                             </div>
                         </div>
 
-                        {/* NEW: Career Outcomes & Graduation Cohort Charts */}
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                            {/* Career Outcomes Pie Chart */}
                             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                                 <h3 className="text-lg font-bold text-gray-900 mb-4 border-b pb-2">Career Outcomes</h3>
                                 <div className="h-64 w-full">
@@ -176,7 +178,6 @@ export default function HODDashboard() {
                                 </div>
                             </div>
 
-                            {/* Graduation Cohorts Line Chart */}
                             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                                 <h3 className="text-lg font-bold text-gray-900 mb-4 border-b pb-2">Alumni Registration by Cohort</h3>
                                 <div className="h-64 w-full">
@@ -243,12 +244,13 @@ export default function HODDashboard() {
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <Search className="h-4 w-4 text-gray-400" />
                                     </div>
+                                    {/* FIX 3: Added text-gray-900 to search input */}
                                     <input
                                         type="text"
                                         placeholder="Search name, email, or company..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 bg-white"
+                                        className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 bg-white"
                                     />
                                 </div>
                             </div>

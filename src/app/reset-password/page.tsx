@@ -47,7 +47,8 @@ function ResetPasswordForm() {
     setErrorMessage('');
 
     try {
-      const res = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/auth/reset-password-with-token', {
+      // FIX 1: Cleaned the API URL
+      const res = await fetch('https://harare-poly-api.onrender.com/api/auth/reset-password-with-token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, token, newPassword: password }),
@@ -104,23 +105,25 @@ function ResetPasswordForm() {
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+            {/* FIX 3: Added text-gray-900 */}
             <input 
               type="password" 
               required 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm"
+              className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-sm"
               placeholder="••••••••"
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+            {/* FIX 3: Added text-gray-900 */}
             <input 
               type="password" 
               required 
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm"
+              className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-sm"
               placeholder="••••••••"
             />
           </div>
@@ -143,14 +146,18 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+      {/* FIX 2: Responsive Mobile Header */}
       <nav className="bg-white shadow-sm border-b" style={{ borderColor: hpDarkBlue }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <a href="/login" className="flex items-center text-gray-600 hover:text-blue-800 transition-colors font-medium">
-            <ArrowLeft className="mr-2" size={20} /> Back to Login
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+          <a href="/login" className="flex items-center text-gray-600 hover:text-blue-800 transition-colors font-medium shrink-0">
+            <ArrowLeft className="mr-2" size={20} /> 
+            <span className="hidden sm:block">Back to Login</span>
           </a>
-          <span className="font-bold text-xl tracking-tight" style={{ color: hpDarkBlue }}>
-            Harare Poly <span className="font-light">Security</span>
-          </span>
+          <div className="flex-1 text-right pl-4 overflow-hidden">
+            <span className="font-bold text-lg sm:text-xl tracking-tight truncate block" style={{ color: hpDarkBlue }}>
+              Harare Poly <span className="font-light">Security</span>
+            </span>
+          </div>
         </div>
       </nav>
 

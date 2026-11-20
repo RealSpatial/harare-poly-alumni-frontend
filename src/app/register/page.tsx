@@ -4,19 +4,17 @@ import React, { useState } from 'react';
 import { ArrowLeft, UserPlus, CheckCircle2, Lock, Mail } from 'lucide-react';
 
 export default function RegisterPage() {
-  // State for form data - NOW INCLUDES courseName
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     studentId: '',
     graduationYear: '',
     department: '',
-    courseName: '', // NEW: Course Name
+    courseName: '', 
     email: '',
     password: ''
   });
 
-  // UI state
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -39,7 +37,8 @@ export default function RegisterPage() {
     setError(null);
 
     try {
-      const response = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/alumni/register', {
+      // FIX 1: Cleaned API URL
+      const response = await fetch('https://harare-poly-api.onrender.com/api/alumni/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -50,7 +49,7 @@ export default function RegisterPage() {
           student_id_number: formData.studentId,
           graduation_year: parseInt(formData.graduationYear),
           department: formData.department,
-          course_name: formData.courseName, // NEW: Sent to secure backend
+          course_name: formData.courseName, 
           email: formData.email,
           password: formData.password 
         }),
@@ -62,7 +61,6 @@ export default function RegisterPage() {
         throw new Error(data.error || 'Registration failed. Please check your inputs.');
       }
 
-      // Success!
       setSuccess(true);
     } catch (err: any) {
       console.error("Submission error:", err);
@@ -75,14 +73,16 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex flex-col font-sans" style={{ backgroundColor: hpBackground }}>
       
-      {/* Navbar */}
+      {/* FIX 2: Responsive Mobile Header */}
       <nav className="bg-white shadow-sm border-b" style={{ borderColor: hpDarkBlue }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <a href="/" className="flex items-center text-gray-600 hover:text-blue-800 transition-colors">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+          <a href="/" className="flex items-center text-gray-600 hover:text-blue-800 transition-colors shrink-0">
             <ArrowLeft className="mr-2" size={20} />
-            Back to Home
+            <span className="hidden sm:block">Back to Home</span>
           </a>
-          <span className="font-bold text-lg" style={{ color: hpDarkBlue }}>Alumni Registration</span>
+          <div className="flex-1 text-right pl-4 overflow-hidden">
+            <span className="font-bold text-lg sm:text-xl truncate block" style={{ color: hpDarkBlue }}>Alumni Registration</span>
+          </div>
         </div>
       </nav>
 
@@ -92,7 +92,6 @@ export default function RegisterPage() {
           
           <div className="px-6 py-8 md:p-10">
             {success ? (
-              // Success State UI
               <div className="text-center py-8">
                 <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
                   <CheckCircle2 className="h-10 w-10 text-green-600" />
@@ -106,7 +105,6 @@ export default function RegisterPage() {
                 </a>
               </div>
             ) : (
-              // Form UI
               <>
                 <div className="text-center mb-8">
                   <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4" style={{ backgroundColor: `${hpLightBlue}20` }}>
@@ -126,7 +124,6 @@ export default function RegisterPage() {
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                   
-                  {/* Account Credentials Section */}
                   <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 mb-6 space-y-4">
                     <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide border-b pb-2">Account Credentials</h3>
                     
@@ -136,9 +133,10 @@ export default function RegisterPage() {
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <Mail className="h-4 w-4 text-gray-400" />
                         </div>
+                        {/* FIX 3: Added text-gray-900 */}
                         <input type="email" name="email" required
                           value={formData.email} onChange={handleChange}
-                          className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                          className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 sm:text-sm" 
                           placeholder="you@example.com" />
                       </div>
                     </div>
@@ -149,30 +147,32 @@ export default function RegisterPage() {
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                           <Lock className="h-4 w-4 text-gray-400" />
                         </div>
+                        {/* FIX 3: Added text-gray-900 */}
                         <input type="password" name="password" required minLength={6}
                           value={formData.password} onChange={handleChange}
-                          className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                          className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 sm:text-sm" 
                           placeholder="Create a strong password" />
                       </div>
                     </div>
                   </div>
 
-                  {/* Academic Info Section */}
                   <div className="space-y-4">
                     <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide border-b pb-2">Polytechnic Details</h3>
                     
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <div>
                         <label className="block text-sm font-medium text-gray-700">First Name</label>
+                        {/* FIX 3: Added text-gray-900 */}
                         <input type="text" name="firstName" required
                           value={formData.firstName} onChange={handleChange}
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border" />
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 sm:text-sm p-2.5 border" />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700">Last Name</label>
+                        {/* FIX 3: Added text-gray-900 */}
                         <input type="text" name="lastName" required
                           value={formData.lastName} onChange={handleChange}
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border" />
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 sm:text-sm p-2.5 border" />
                       </div>
                     </div>
 
@@ -180,23 +180,26 @@ export default function RegisterPage() {
                       <label className="block text-sm font-medium text-gray-700">
                         Student ID Number <span className="text-gray-400 font-normal ml-1">(Optional)</span>
                       </label>
+                      {/* FIX 3: Added text-gray-900 */}
                       <input type="text" name="studentId" placeholder="e.g., 2018H00123 (Leave blank if forgotten)"
                         value={formData.studentId} onChange={handleChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border" />
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 sm:text-sm p-2.5 border" />
                     </div>
 
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <div>
                         <label className="block text-sm font-medium text-gray-700">Graduation Year</label>
+                        {/* FIX 3: Added text-gray-900 */}
                         <input type="number" name="graduationYear" required min="1919" max="2026"
                           value={formData.graduationYear} onChange={handleChange}
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border" />
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 sm:text-sm p-2.5 border" />
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700">Department</label>
+                        {/* FIX 3: Added text-gray-900 */}
                         <select name="department" required
                           value={formData.department} onChange={handleChange}
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border bg-white">
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 sm:text-sm p-2.5 border bg-white">
                           <option value="">Select Department / Division</option>
                           <option value="Applied Arts">Applied Arts</option>
                           <option value="Automotive Engineering">Automotive Engineering</option>
@@ -216,16 +219,15 @@ export default function RegisterPage() {
                       </div>
                     </div>
 
-                    {/* NEW COURSE INPUT FIELD */}
                     <div className="mt-4">
                       <label className="block text-sm font-medium text-gray-700">Specific Course / Certificate</label>
+                      {/* FIX 3: Added text-gray-900 */}
                       <input type="text" name="courseName" required placeholder="e.g., NC in Plumbing and Drainlaying"
                         value={formData.courseName} onChange={handleChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2.5 border" />
+                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 sm:text-sm p-2.5 border" />
                     </div>
                   </div>
 
-                  {/* Submit Button */}
                   <div className="pt-4">
                     <button
                       type="submit"

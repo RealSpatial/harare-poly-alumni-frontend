@@ -27,7 +27,8 @@ export default function StartupsPage() {
 
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/companies', {
+      // FIX 1: Cleaned the API URL
+      const res = await fetch('https://harare-poly-api.onrender.com/api/companies', {
         method: 'POST',
         headers: { 
             'Content-Type': 'application/json',
@@ -53,12 +54,16 @@ export default function StartupsPage() {
 
   return (
     <div className="min-h-screen flex flex-col font-sans" style={{ backgroundColor: hpBackground }}>
+      {/* FIX 2: Responsive Mobile Header */}
       <nav className="bg-white shadow-sm border-b" style={{ borderColor: hpDarkBlue }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <a href="/profile" className="flex items-center text-gray-600 hover:text-blue-800 transition-colors font-medium">
-            <ArrowLeft className="mr-2" size={20} /> Back to Profile
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+          <a href="/profile" className="flex items-center text-gray-600 hover:text-blue-800 transition-colors font-medium shrink-0">
+            <ArrowLeft className="mr-2" size={20} /> 
+            <span className="hidden sm:block">Back to Profile</span>
           </a>
-          <span className="font-bold text-lg" style={{ color: hpDarkBlue }}>Startup Registration</span>
+          <div className="flex-1 text-right pl-4 overflow-hidden">
+            <span className="font-bold text-lg sm:text-xl tracking-tight truncate block" style={{ color: hpDarkBlue }}>Startup Registration</span>
+          </div>
         </div>
       </nav>
 
@@ -92,14 +97,16 @@ export default function StartupsPage() {
                           <label className="block text-sm font-bold text-gray-700 mb-1">Company / Startup Name</label>
                           <div className="relative">
                               <Building2 className="absolute top-3 left-3 text-gray-400" size={18} />
-                              <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full pl-10 p-2.5 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="e.g. Innovate Tech Solutions" />
+                              {/* FIX 3: Added text-gray-900 */}
+                              <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full pl-10 p-2.5 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-900" placeholder="e.g. Innovate Tech Solutions" />
                           </div>
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div>
                               <label className="block text-sm font-bold text-gray-700 mb-1">Industry</label>
-                              <select required value={formData.industry} onChange={e => setFormData({...formData, industry: e.target.value})} className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-blue-500 bg-white">
+                              {/* FIX 3: Added text-gray-900 */}
+                              <select required value={formData.industry} onChange={e => setFormData({...formData, industry: e.target.value})} className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-blue-500 bg-white text-gray-900">
                                   <option value="">Select Industry...</option>
                                   <option value="Information Technology">Information Technology</option>
                                   <option value="Construction & Engineering">Construction & Engineering</option>
@@ -113,7 +120,8 @@ export default function StartupsPage() {
                               <label className="block text-sm font-bold text-gray-700 mb-1">Website URL (Optional)</label>
                               <div className="relative">
                                   <Globe className="absolute top-3 left-3 text-gray-400" size={18} />
-                                  <input type="url" value={formData.website} onChange={e => setFormData({...formData, website: e.target.value})} className="w-full pl-10 p-2.5 border border-gray-300 rounded-lg focus:ring-blue-500" placeholder="https://..." />
+                                  {/* FIX 3: Added text-gray-900 */}
+                                  <input type="url" value={formData.website} onChange={e => setFormData({...formData, website: e.target.value})} className="w-full pl-10 p-2.5 border border-gray-300 rounded-lg focus:ring-blue-500 text-gray-900" placeholder="https://..." />
                               </div>
                           </div>
                       </div>
@@ -122,7 +130,8 @@ export default function StartupsPage() {
                           <label className="block text-sm font-bold text-gray-700 mb-1">Short Description</label>
                           <div className="relative">
                               <FileText className="absolute top-3 left-3 text-gray-400" size={18} />
-                              <textarea required rows={3} value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full pl-10 p-2.5 border border-gray-300 rounded-lg focus:ring-blue-500" placeholder="What does your company do?" />
+                              {/* FIX 3: Added text-gray-900 */}
+                              <textarea required rows={3} value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} className="w-full pl-10 p-2.5 border border-gray-300 rounded-lg focus:ring-blue-500 text-gray-900" placeholder="What does your company do?" />
                           </div>
                       </div>
 

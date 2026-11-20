@@ -25,18 +25,19 @@ export default function DirectoryPage() {
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        // This is THE BRIDGE! Calling your Node.js API
-        const response = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/companies');
+        // FIX 1: Corrected API URL (removed markdown brackets)
+        const response = await fetch('https://harare-poly-api.onrender.com/api/companies');
         
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
         
         const data = await response.json();
-        setCompanies(data); // Save the database data into our React state
+        setCompanies(data);
       } catch (err: any) {
         console.error("Fetch error:", err);
-        setError("Failed to load companies. Is the Node.js backend running on port 3000?");
+        // FIX 2: Updated the hardcoded error message for production
+        setError("Please check your internet connection or try again later.");
       } finally {
         setLoading(false);
       }
@@ -48,14 +49,18 @@ export default function DirectoryPage() {
   return (
     <div className="min-h-screen flex flex-col font-sans" style={{ backgroundColor: hpBackground }}>
       
-      {/* Simple Header */}
+      {/* FIX 3: Responsive Mobile Header */}
       <nav className="bg-white shadow-sm border-b" style={{ borderColor: hpDarkBlue }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <a href="/" className="flex items-center text-gray-600 hover:text-blue-800 transition-colors">
+          <a href="/" className="flex items-center text-gray-600 hover:text-blue-800 transition-colors shrink-0">
             <ArrowLeft className="mr-2" size={20} />
-            Back to Home
+            {/* Hidden on mobile, shown on larger screens */}
+            <span className="hidden sm:block">Back to Home</span>
           </a>
-          <span className="font-bold text-lg" style={{ color: hpDarkBlue }}>Corporate Directory</span>
+          <div className="flex-1 text-right pl-4 overflow-hidden">
+             {/* Truncates text with '...' if it gets too long on tiny screens */}
+            <span className="font-bold text-lg sm:text-xl truncate block" style={{ color: hpDarkBlue }}>Corporate Directory</span>
+          </div>
         </div>
       </nav>
 
@@ -68,7 +73,6 @@ export default function DirectoryPage() {
           </p>
         </div>
 
-        {}
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-800"></div>

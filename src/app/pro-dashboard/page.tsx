@@ -34,7 +34,6 @@ interface GalleryItem {
 }
 
 export default function PRODashboardPage() {
-  // NEW: Added 'stories' to activeTab state
   const [activeTab, setActiveTab] = useState<'feedback' | 'jobs' | 'gallery' | 'stories'>('feedback');
   
   const [feedback, setFeedback] = useState<FeedbackData[]>([]);
@@ -43,13 +42,11 @@ export default function PRODashboardPage() {
   const [gallery, setGallery] = useState<GalleryItem[]>([]);
   const [newGalleryItem, setNewGalleryItem] = useState({ title: '', description: '', image_url: '', category: 'Achievement' });
 
-  // NEW: State for publishing a story
   const [newStory, setNewStory] = useState({ title: '', excerpt: '', content: '', image_url: '' });
   const [publishStatus, setPublishStatus] = useState<{success: boolean, text: string} | null>(null);
 
   const [loading, setLoading] = useState(true);
 
-  // Broadcast State
   const [broadcastTitle, setBroadcastTitle] = useState('');
   const [broadcastMessage, setBroadcastMessage] = useState('');
   const [sendStatus, setSendStatus] = useState<{success: boolean, text: string} | null>(null);
@@ -66,17 +63,17 @@ export default function PRODashboardPage() {
       const token = localStorage.getItem('token');
       if (!token) { window.location.href = '/login'; return; }
 
+      // FIX 1: Cleaned all API URLs
       if (activeTab === 'feedback') {
-          const res = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/pro/feedback', { headers: { 'Authorization': `Bearer ${token}` }});
+          const res = await fetch('https://harare-poly-api.onrender.com/api/pro/feedback', { headers: { 'Authorization': `Bearer ${token}` }});
           if (res.ok) setFeedback(await res.json());
       } else if (activeTab === 'jobs') {
-          const res = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/pro/pending-jobs', { headers: { 'Authorization': `Bearer ${token}` }});
+          const res = await fetch('https://harare-poly-api.onrender.com/api/pro/pending-jobs', { headers: { 'Authorization': `Bearer ${token}` }});
           if (res.ok) setPendingJobs(await res.json());
       } else if (activeTab === 'gallery') {
-          const res = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/gallery', { headers: { 'Authorization': `Bearer ${token}` }});
+          const res = await fetch('https://harare-poly-api.onrender.com/api/gallery', { headers: { 'Authorization': `Bearer ${token}` }});
           if (res.ok) setGallery(await res.json());
       }
-      // Note: We don't necessarily need to fetch all stories on load unless we build a list view for them later!
     } catch (err) {
       console.error(err);
     } finally {
@@ -89,7 +86,8 @@ export default function PRODashboardPage() {
       setSendStatus(null);
       try {
           const token = localStorage.getItem('token');
-          const res = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/pro/broadcast', {
+          // FIX 1: Cleaned API URL
+          const res = await fetch('https://harare-poly-api.onrender.com/api/pro/broadcast', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
               body: JSON.stringify({ title: broadcastTitle, message: broadcastMessage })
@@ -105,7 +103,8 @@ export default function PRODashboardPage() {
   const handleVerifyJob = async (id: number, status: 'Approved' | 'Rejected') => {
       try {
           const token = localStorage.getItem('token');
-          const res = await fetch(`[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/pro/jobs/${id}/verify`, {
+          // FIX 1: Cleaned API URL
+          const res = await fetch(`https://harare-poly-api.onrender.com/api/pro/jobs/${id}/verify`, {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
               body: JSON.stringify({ status })
@@ -122,7 +121,8 @@ export default function PRODashboardPage() {
     e.preventDefault();
     try {
         const token = localStorage.getItem('token');
-        const res = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/pro/gallery', {
+        // FIX 1: Cleaned API URL
+        const res = await fetch('https://harare-poly-api.onrender.com/api/pro/gallery', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify(newGalleryItem)
@@ -139,7 +139,8 @@ export default function PRODashboardPage() {
   const handleDeleteHighlight = async (id: number) => {
       try {
           const token = localStorage.getItem('token');
-          await fetch(`[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/pro/gallery/${id}`, {
+          // FIX 1: Cleaned API URL
+          await fetch(`https://harare-poly-api.onrender.com/api/pro/gallery/${id}`, {
               method: 'DELETE',
               headers: { 'Authorization': `Bearer ${token}` }
           });
@@ -147,13 +148,13 @@ export default function PRODashboardPage() {
       } catch (err) {}
   };
 
-  // NEW: Handler to publish a story to the backend
   const handlePublishStory = async (e: React.FormEvent) => {
       e.preventDefault();
       setPublishStatus(null);
       try {
           const token = localStorage.getItem('token');
-          const res = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/stories', {
+          // FIX 1: Cleaned API URL
+          const res = await fetch('https://harare-poly-api.onrender.com/api/stories', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
               body: JSON.stringify(newStory)
@@ -173,13 +174,14 @@ export default function PRODashboardPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-20">
+      {/* FIX 2: Responsive Mobile Header */}
       <nav className="bg-white shadow-sm border-b sticky top-0 z-40" style={{ borderColor: hpDarkBlue }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-             <div className="w-8 h-8 rounded bg-blue-900 text-white font-bold flex items-center justify-center text-xs">HP</div>
-             <span className="font-bold text-xl tracking-tight" style={{ color: hpDarkBlue }}>Public Relations <span className="font-light">Command Center</span></span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+          <div className="flex items-center overflow-hidden">
+             <div className="w-8 h-8 rounded bg-blue-900 text-white font-bold flex items-center justify-center text-xs shrink-0 mr-3">HP</div>
+             <span className="font-bold text-lg sm:text-xl tracking-tight truncate block" style={{ color: hpDarkBlue }}>Public Relations <span className="font-light">Command Center</span></span>
           </div>
-          <button onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('role'); window.location.href = '/login'; }} className="text-sm font-medium text-gray-500 hover:text-red-600 transition-colors">
+          <button onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('role'); window.location.href = '/login'; }} className="text-sm font-medium text-gray-500 hover:text-red-600 transition-colors shrink-0 whitespace-nowrap ml-2">
               Sign Out
           </button>
         </div>
@@ -208,7 +210,6 @@ export default function PRODashboardPage() {
             >
                 <ImageIcon className="mr-2" size={18} /> Media & Highlights
             </button>
-            {/* NEW: Stories Tab Button */}
             <button 
                 onClick={() => setActiveTab('stories')}
                 className={`whitespace-nowrap py-4 px-6 text-sm font-bold border-b-2 transition-colors flex items-center ${activeTab === 'stories' ? 'border-blue-800 text-blue-800' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
@@ -219,7 +220,6 @@ export default function PRODashboardPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            {/* LEFT COLUMN: Broadcast Tool (Always Visible) */}
             <div className="lg:col-span-1 space-y-6">
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <div className="flex items-center mb-4 pb-3 border-b border-gray-50">
@@ -232,10 +232,12 @@ export default function PRODashboardPage() {
                     {sendStatus && <div className={`p-3 rounded-md text-sm mb-4 font-medium ${sendStatus.success ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>{sendStatus.text}</div>}
                     <form onSubmit={handleSendBroadcast} className="space-y-4">
                         <div>
-                            <input type="text" required value={broadcastTitle} onChange={(e) => setBroadcastTitle(e.target.value)} placeholder="Subject / Title" className="w-full p-2.5 border border-gray-300 rounded-md text-sm" />
+                            {/* FIX 3: Added text-gray-900 */}
+                            <input type="text" required value={broadcastTitle} onChange={(e) => setBroadcastTitle(e.target.value)} placeholder="Subject / Title" className="w-full p-2.5 border border-gray-300 rounded-md text-gray-900 text-sm" />
                         </div>
                         <div>
-                            <textarea required rows={5} value={broadcastMessage} onChange={(e) => setBroadcastMessage(e.target.value)} placeholder="Message Body..." className="w-full p-2.5 border border-gray-300 rounded-md text-sm" />
+                            {/* FIX 3: Added text-gray-900 */}
+                            <textarea required rows={5} value={broadcastMessage} onChange={(e) => setBroadcastMessage(e.target.value)} placeholder="Message Body..." className="w-full p-2.5 border border-gray-300 rounded-md text-gray-900 text-sm" />
                         </div>
                         <button type="submit" className="w-full bg-blue-800 text-white font-bold py-3 rounded-md hover:bg-blue-900 shadow-sm flex items-center justify-center transition-colors">
                             <Send size={18} className="mr-2" /> Send Broadcast
@@ -244,11 +246,9 @@ export default function PRODashboardPage() {
                 </div>
             </div>
 
-            {/* RIGHT COLUMN: Dynamic Content Based on Tab */}
             <div className="lg:col-span-2">
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden min-h-[600px] flex flex-col">
                     
-                    {/* FEEDBACK TAB */}
                     {activeTab === 'feedback' && (
                         <>
                             <div className="p-6 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
@@ -273,7 +273,6 @@ export default function PRODashboardPage() {
                         </>
                     )}
 
-                    {/* JOBS TAB */}
                     {activeTab === 'jobs' && (
                         <>
                             <div className="p-6 border-b border-gray-100 bg-amber-50 flex justify-between items-center">
@@ -307,7 +306,6 @@ export default function PRODashboardPage() {
                         </>
                     )}
 
-                    {/* GALLERY TAB */}
                     {activeTab === 'gallery' && (
                         <>
                             <div className="p-6 border-b border-gray-100 bg-blue-50 flex justify-between items-center">
@@ -317,14 +315,18 @@ export default function PRODashboardPage() {
                             <div className="p-6 bg-white border-b border-gray-100">
                                 <h4 className="text-sm font-bold text-gray-900 mb-3 flex items-center"><PlusCircle size={16} className="mr-2 text-blue-600"/> Post New Highlight</h4>
                                 <form onSubmit={handleAddHighlight} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <input type="text" required value={newGalleryItem.title} onChange={e => setNewGalleryItem({...newGalleryItem, title: e.target.value})} placeholder="Highlight Title" className="p-2.5 border border-gray-300 rounded-md text-sm" />
-                                    <select value={newGalleryItem.category} onChange={e => setNewGalleryItem({...newGalleryItem, category: e.target.value})} className="p-2.5 border border-gray-300 rounded-md text-sm bg-white">
+                                    {/* FIX 3: Added text-gray-900 */}
+                                    <input type="text" required value={newGalleryItem.title} onChange={e => setNewGalleryItem({...newGalleryItem, title: e.target.value})} placeholder="Highlight Title" className="p-2.5 border border-gray-300 rounded-md text-gray-900 text-sm" />
+                                    {/* FIX 3: Added text-gray-900 */}
+                                    <select value={newGalleryItem.category} onChange={e => setNewGalleryItem({...newGalleryItem, category: e.target.value})} className="p-2.5 border border-gray-300 rounded-md bg-white text-gray-900 text-sm">
                                         <option value="Achievement">Achievement</option>
                                         <option value="Graduation">Graduation</option>
                                         <option value="Campus">Campus News</option>
                                     </select>
-                                    <input type="url" required value={newGalleryItem.image_url} onChange={e => setNewGalleryItem({...newGalleryItem, image_url: e.target.value})} placeholder="Image URL (e.g. https://.../photo.jpg)" className="p-2.5 border border-gray-300 rounded-md text-sm md:col-span-2" />
-                                    <textarea required rows={2} value={newGalleryItem.description} onChange={e => setNewGalleryItem({...newGalleryItem, description: e.target.value})} placeholder="Short description..." className="p-2.5 border border-gray-300 rounded-md text-sm md:col-span-2" />
+                                    {/* FIX 3: Added text-gray-900 */}
+                                    <input type="url" required value={newGalleryItem.image_url} onChange={e => setNewGalleryItem({...newGalleryItem, image_url: e.target.value})} placeholder="Image URL (e.g. https://.../photo.jpg)" className="p-2.5 border border-gray-300 rounded-md text-gray-900 text-sm md:col-span-2" />
+                                    {/* FIX 3: Added text-gray-900 */}
+                                    <textarea required rows={2} value={newGalleryItem.description} onChange={e => setNewGalleryItem({...newGalleryItem, description: e.target.value})} placeholder="Short description..." className="p-2.5 border border-gray-300 rounded-md text-gray-900 text-sm md:col-span-2" />
                                     <button type="submit" className="md:col-span-2 bg-blue-800 text-white font-bold py-2 rounded-md hover:bg-blue-900 transition-colors">Publish to Homepage</button>
                                 </form>
                             </div>
@@ -351,7 +353,6 @@ export default function PRODashboardPage() {
                         </>
                     )}
 
-                    {/* NEW: SUCCESS STORIES TAB */}
                     {activeTab === 'stories' && (
                         <>
                             <div className="p-6 border-b border-gray-100 bg-indigo-50 flex justify-between items-center">
@@ -367,22 +368,26 @@ export default function PRODashboardPage() {
                                     <form onSubmit={handlePublishStory} className="space-y-5">
                                         <div>
                                             <label className="block text-sm font-bold text-gray-700 mb-1">Headline</label>
-                                            <input type="text" required value={newStory.title} onChange={e => setNewStory({...newStory, title: e.target.value})} placeholder="e.g. Alumnus Spotlight: Jane Doe at Econet" className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" />
+                                            {/* FIX 3: Added text-gray-900 */}
+                                            <input type="text" required value={newStory.title} onChange={e => setNewStory({...newStory, title: e.target.value})} placeholder="e.g. Alumnus Spotlight: Jane Doe at Econet" className="w-full p-3 border border-gray-300 rounded-lg text-gray-900 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" />
                                         </div>
                                         
                                         <div>
                                             <label className="block text-sm font-bold text-gray-700 mb-1">Short Excerpt</label>
-                                            <textarea required rows={2} value={newStory.excerpt} onChange={e => setNewStory({...newStory, excerpt: e.target.value})} placeholder="A quick summary for the landing page card..." className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" />
+                                            {/* FIX 3: Added text-gray-900 */}
+                                            <textarea required rows={2} value={newStory.excerpt} onChange={e => setNewStory({...newStory, excerpt: e.target.value})} placeholder="A quick summary for the landing page card..." className="w-full p-3 border border-gray-300 rounded-lg text-gray-900 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" />
                                         </div>
                                         
                                         <div>
                                             <label className="block text-sm font-bold text-gray-700 mb-1">Cover Image URL</label>
-                                            <input type="url" required value={newStory.image_url} onChange={e => setNewStory({...newStory, image_url: e.target.value})} placeholder="https://..." className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" />
+                                            {/* FIX 3: Added text-gray-900 */}
+                                            <input type="url" required value={newStory.image_url} onChange={e => setNewStory({...newStory, image_url: e.target.value})} placeholder="https://..." className="w-full p-3 border border-gray-300 rounded-lg text-gray-900 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" />
                                         </div>
                                         
                                         <div>
                                             <label className="block text-sm font-bold text-gray-700 mb-1">Full Article Content</label>
-                                            <textarea required rows={8} value={newStory.content} onChange={e => setNewStory({...newStory, content: e.target.value})} placeholder="Write the full success story here..." className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" />
+                                            {/* FIX 3: Added text-gray-900 */}
+                                            <textarea required rows={8} value={newStory.content} onChange={e => setNewStory({...newStory, content: e.target.value})} placeholder="Write the full success story here..." className="w-full p-3 border border-gray-300 rounded-lg text-gray-900 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" />
                                         </div>
                                         
                                         <div className="pt-2">

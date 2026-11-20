@@ -37,7 +37,8 @@ export default function CareersPage() {
 
   const fetchCurrentUser = async (token: string) => {
     try {
-      const res = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/alumni/me', {
+      // FIX: Cleaned API URL
+      const res = await fetch('https://harare-poly-api.onrender.com/api/alumni/me', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -53,14 +54,14 @@ export default function CareersPage() {
     try {
       const token = localStorage.getItem('token');
       if (!token) { 
-        // Give them a return ticket so the login page knows where to send them back!
         window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`; 
         return; 
       }
 
       await fetchCurrentUser(token);
 
-      const response = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/jobs', {
+      // FIX: Cleaned API URL
+      const response = await fetch('https://harare-poly-api.onrender.com/api/jobs', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -85,7 +86,8 @@ export default function CareersPage() {
     setDeletingId(jobId);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/jobs/${jobId}`, {
+      // FIX: Cleaned API URL
+      const res = await fetch(`https://harare-poly-api.onrender.com/api/jobs/${jobId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -103,16 +105,13 @@ export default function CareersPage() {
     }
   };
 
-  useEffect(() => {
-    fetchJobs();
-  }, []);
-
   const handlePostJob = async (e: React.FormEvent) => {
       e.preventDefault();
       setIsSubmitting(true);
       try {
           const token = localStorage.getItem('token');
-          const res = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/jobs', {
+          // FIX: Cleaned API URL
+          const res = await fetch('https://harare-poly-api.onrender.com/api/jobs', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
               body: JSON.stringify(jobForm)
@@ -121,7 +120,7 @@ export default function CareersPage() {
           if (res.ok) {
               setShowPostModal(false);
               setJobForm({ company_name: '', job_title: '', location: 'Harare, Zimbabwe', job_type: 'Full-time', description: '', application_link: '' });
-              fetchJobs(); // Refresh the board
+              fetchJobs(); 
           }
       } catch (err) {
           console.error(err);
@@ -138,17 +137,24 @@ export default function CareersPage() {
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-20">
       
+      {/* FIX: Mobile Responsive Header */}
       <nav className="bg-white shadow-sm border-b sticky top-0 z-40" style={{ borderColor: hpDarkBlue }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-             <a href="/profile" className="text-gray-500 hover:text-blue-800 transition-colors mr-2"><ArrowLeft size={20}/></a>
-             <span className="font-bold text-xl tracking-tight" style={{ color: hpDarkBlue }}>Alumni <span className="font-light">Job Board</span></span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+          <div className="flex items-center overflow-hidden">
+             <a href="/profile" className="text-gray-500 hover:text-blue-800 transition-colors mr-2 shrink-0">
+               <ArrowLeft size={20}/>
+             </a>
+             <span className="font-bold text-lg sm:text-xl tracking-tight truncate block" style={{ color: hpDarkBlue }}>
+               Alumni <span className="font-light">Job Board</span>
+             </span>
           </div>
           <button 
             onClick={() => setShowPostModal(true)}
-            className="bg-blue-800 hover:bg-blue-900 text-white text-sm font-bold px-4 py-2 rounded-md shadow-sm transition-colors flex items-center"
+            className="bg-blue-800 hover:bg-blue-900 text-white text-sm font-bold px-3 py-2 sm:px-4 rounded-md shadow-sm transition-colors flex items-center shrink-0"
           >
-              <Plus size={16} className="mr-1" /> Post a Vacancy
+              <Plus size={16} className="sm:mr-1" /> 
+              {/* Text hidden on mobile, only + icon shows */}
+              <span className="hidden sm:block">Post a Vacancy</span>
           </button>
         </div>
       </nav>
@@ -170,12 +176,13 @@ export default function CareersPage() {
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <Search className="h-5 w-5 text-gray-400" />
                 </div>
+                {/* FIX: Added text-gray-900 */}
                 <input 
                     type="text" 
                     placeholder="Search by job title or company..." 
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-gray-50 text-sm" 
+                    className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-gray-50 text-gray-900 text-sm" 
                 />
             </div>
         </div>
@@ -217,7 +224,6 @@ export default function CareersPage() {
                             </div>
                         </div>
 
-                        {}
                         <div className="shrink-0 flex flex-col justify-center border-t md:border-t-0 md:border-l border-gray-100 pt-4 md:pt-0 md:pl-6 gap-2">
                             <a 
                                 href={job.application_link.includes('http') ? job.application_link : `https://${job.application_link}`}
@@ -259,22 +265,23 @@ export default function CareersPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
-                            <input required type="text" value={jobForm.company_name} onChange={e => setJobForm({...jobForm, company_name: e.target.value})} className="w-full p-2.5 border border-gray-300 rounded-md text-sm" placeholder="e.g. Econet Wireless" />
+                            {/* FIX: Added text-gray-900 */}
+                            <input required type="text" value={jobForm.company_name} onChange={e => setJobForm({...jobForm, company_name: e.target.value})} className="w-full p-2.5 border border-gray-300 rounded-md text-gray-900 text-sm" placeholder="e.g. Econet Wireless" />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
-                            <input required type="text" value={jobForm.job_title} onChange={e => setJobForm({...jobForm, job_title: e.target.value})} className="w-full p-2.5 border border-gray-300 rounded-md text-sm" placeholder="e.g. Senior Technician" />
+                            <input required type="text" value={jobForm.job_title} onChange={e => setJobForm({...jobForm, job_title: e.target.value})} className="w-full p-2.5 border border-gray-300 rounded-md text-gray-900 text-sm" placeholder="e.g. Senior Technician" />
                         </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
-                            <input required type="text" value={jobForm.location} onChange={e => setJobForm({...jobForm, location: e.target.value})} className="w-full p-2.5 border border-gray-300 rounded-md text-sm" placeholder="e.g. Harare, Zimbabwe" />
+                            <input required type="text" value={jobForm.location} onChange={e => setJobForm({...jobForm, location: e.target.value})} className="w-full p-2.5 border border-gray-300 rounded-md text-gray-900 text-sm" placeholder="e.g. Harare, Zimbabwe" />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Job Type</label>
-                            <select value={jobForm.job_type} onChange={e => setJobForm({...jobForm, job_type: e.target.value})} className="w-full p-2.5 border border-gray-300 rounded-md text-sm bg-white">
+                            <select value={jobForm.job_type} onChange={e => setJobForm({...jobForm, job_type: e.target.value})} className="w-full p-2.5 border border-gray-300 rounded-md text-gray-900 text-sm bg-white">
                                 <option>Full-time</option>
                                 <option>Part-time</option>
                                 <option>Contract</option>
@@ -285,12 +292,12 @@ export default function CareersPage() {
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Job Description</label>
-                        <textarea required rows={4} value={jobForm.description} onChange={e => setJobForm({...jobForm, description: e.target.value})} className="w-full p-2.5 border border-gray-300 rounded-md text-sm" placeholder="Briefly describe the role, requirements, and responsibilities..."></textarea>
+                        <textarea required rows={4} value={jobForm.description} onChange={e => setJobForm({...jobForm, description: e.target.value})} className="w-full p-2.5 border border-gray-300 rounded-md text-gray-900 text-sm" placeholder="Briefly describe the role, requirements, and responsibilities..."></textarea>
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">Application Link or Email</label>
-                        <input required type="text" value={jobForm.application_link} onChange={e => setJobForm({...jobForm, application_link: e.target.value})} className="w-full p-2.5 border border-gray-300 rounded-md text-sm" placeholder="e.g. https://company.com/careers or hr@company.com" />
+                        <input required type="text" value={jobForm.application_link} onChange={e => setJobForm({...jobForm, application_link: e.target.value})} className="w-full p-2.5 border border-gray-300 rounded-md text-gray-900 text-sm" placeholder="e.g. https://company.com/careers or hr@company.com" />
                     </div>
 
                     <div className="pt-2">

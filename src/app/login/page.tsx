@@ -26,10 +26,10 @@ export default function LoginPage() {
       } else {
         // Otherwise, use the default role-based routing
         if (role === 'admin') window.location.href = '/management-dashboard';
-      else if (role === 'pro') window.location.href = '/pro-dashboard';
-      else if (role === 'it') window.location.href = '/it-dashboard';
-      else if (role === 'hod') window.location.href = '/hod-dashboard';
-      else window.location.href = '/profile';
+        else if (role === 'pro') window.location.href = '/pro-dashboard';
+        else if (role === 'it') window.location.href = '/it-dashboard';
+        else if (role === 'hod') window.location.href = '/hod-dashboard';
+        else window.location.href = '/profile';
       }
     }
   }, []);
@@ -40,7 +40,8 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const res = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/login', {
+      // FIX 2: Corrected the malformed URL! Removed the markdown brackets.
+      const res = await fetch('https://harare-poly-api.onrender.com/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -83,15 +84,20 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
-      {/* Navbar */}
+      {/* FIX 1: Responsive Mobile Header */}
       <nav className="bg-white shadow-sm border-b" style={{ borderColor: hpDarkBlue }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <a href="/" className="flex items-center text-gray-600 hover:text-blue-800 transition-colors font-medium">
-            <ArrowLeft className="mr-2" size={20} /> Back to Home
+          <a href="/" className="flex items-center text-gray-600 hover:text-blue-800 transition-colors font-medium shrink-0">
+            <ArrowLeft className="mr-2" size={20} /> 
+            {/* Hidden on mobile, shown on larger screens */}
+            <span className="hidden sm:block">Back to Home</span>
           </a>
-          <span className="font-bold text-xl tracking-tight" style={{ color: hpDarkBlue }}>
-            Harare Poly <span className="font-light">Alumni Network</span>
-          </span>
+          <div className="flex-1 text-right pl-4 overflow-hidden">
+            {/* Truncates text with '...' if it gets too long on tiny screens */}
+            <span className="font-bold text-lg sm:text-xl tracking-tight truncate block" style={{ color: hpDarkBlue }}>
+              Harare Poly <span className="font-light">Alumni Network</span>
+            </span>
+          </div>
         </div>
       </nav>
 
@@ -105,7 +111,7 @@ export default function LoginPage() {
 
           {error && (
             <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm flex items-center">
-              <AlertCircle className="w-5 h-5 mr-2" />
+              <AlertCircle className="w-5 h-5 mr-2 shrink-0" />
               {error}
             </div>
           )}
@@ -117,12 +123,13 @@ export default function LoginPage() {
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Mail className="h-5 w-5 text-gray-400" />
                 </div>
+                {/* FIX 3: Added text-gray-900 so typed text is dark and visible */}
                 <input 
                   type="email" 
                   required 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm"
+                  className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-sm"
                   placeholder="you@example.com"
                 />
               </div>
@@ -134,12 +141,13 @@ export default function LoginPage() {
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-5 w-5 text-gray-400" />
                 </div>
+                {/* FIX 3: Added text-gray-900 so typed text is dark and visible */}
                 <input 
                   type="password" 
                   required 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm"
+                  className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-sm"
                   placeholder="••••••••"
                 />
               </div>

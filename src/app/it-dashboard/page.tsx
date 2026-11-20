@@ -61,14 +61,16 @@ export default function ITDashboardPage() {
       }
 
       if (activeTab === 'tickets') {
-        const response = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/it/reset-requests', {
+        // FIX 1: Cleaned the API URL
+        const response = await fetch('https://harare-poly-api.onrender.com/api/it/reset-requests', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!response.ok) throw new Error('Failed to load tickets');
         const data = await response.json();
         setTickets(data);
       } else {
-        const response = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/it/users', {
+        // FIX 1: Cleaned the API URL
+        const response = await fetch('https://harare-poly-api.onrender.com/api/it/users', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!response.ok) throw new Error('Failed to load users database');
@@ -94,7 +96,8 @@ export default function ITDashboardPage() {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/it/resolve-reset', {
+      // FIX 1: Cleaned the API URL
+      const response = await fetch('https://harare-poly-api.onrender.com/api/it/resolve-reset', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ ticket_id: ticketId, email: email, temp_password: tempPassword })
@@ -121,7 +124,8 @@ export default function ITDashboardPage() {
 
       try {
           const token = localStorage.getItem('token');
-          const response = await fetch(`[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/it/users/${userToDelete.id}`, {
+          // FIX 1: Cleaned the API URL
+          const response = await fetch(`https://harare-poly-api.onrender.com/api/it/users/${userToDelete.id}`, {
               method: 'DELETE',
               headers: { 'Authorization': `Bearer ${token}` }
           });
@@ -146,17 +150,18 @@ export default function ITDashboardPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-20">
+      {/* FIX 2: Responsive Mobile Header */}
       <nav className="bg-white shadow-sm border-b sticky top-0 z-40" style={{ borderColor: hpDarkBlue }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-             <div className="w-8 h-8 rounded bg-blue-900 text-white font-bold flex items-center justify-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+          <div className="flex items-center overflow-hidden">
+             <div className="w-8 h-8 rounded bg-blue-900 text-white font-bold flex items-center justify-center shrink-0 mr-3">
                 <ShieldCheck size={20} />
              </div>
-             <span className="font-bold text-xl tracking-tight" style={{ color: hpDarkBlue }}>
+             <span className="font-bold text-lg sm:text-xl tracking-tight truncate block" style={{ color: hpDarkBlue }}>
                 IT Support <span className="font-light">Command Center</span>
              </span>
           </div>
-          <button onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('role'); window.location.href = '/login'; }} className="text-sm font-medium text-gray-500 hover:text-red-600 transition-colors">
+          <button onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('role'); window.location.href = '/login'; }} className="text-sm font-medium text-gray-500 hover:text-red-600 transition-colors shrink-0 whitespace-nowrap ml-2">
               Sign Out
           </button>
         </div>
@@ -164,7 +169,6 @@ export default function ITDashboardPage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         
-        {}
         <div className="flex border-b border-gray-200 mb-8">
             <button 
                 onClick={() => setActiveTab('tickets')}
@@ -188,7 +192,6 @@ export default function ITDashboardPage() {
             </div>
         )}
 
-        {}
         {activeTab === 'tickets' && (
             <div>
                 <div className="flex items-center justify-between mb-6">
@@ -229,7 +232,8 @@ export default function ITDashboardPage() {
                                     <div className="flex space-x-3">
                                         <div className="relative flex-grow">
                                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><Key className="h-5 w-5 text-gray-400" /></div>
-                                            <input type="text" placeholder="e.g. PolyTemp123!" value={tempPasswords[ticket.id] || ''} onChange={(e) => setTempPasswords({...tempPasswords, [ticket.id]: e.target.value})} className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm font-mono" />
+                                            {/* FIX 3: Added text-gray-900 */}
+                                            <input type="text" placeholder="e.g. PolyTemp123!" value={tempPasswords[ticket.id] || ''} onChange={(e) => setTempPasswords({...tempPasswords, [ticket.id]: e.target.value})} className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg text-gray-900 text-sm font-mono" />
                                         </div>
                                         <button onClick={() => handleResolveTicket(ticket.id, ticket.email)} disabled={resolvingId === ticket.id || !tempPasswords[ticket.id]} className="bg-blue-800 text-white font-bold px-6 py-2.5 rounded-lg hover:bg-blue-900 transition-colors disabled:bg-gray-400 shadow-sm whitespace-nowrap">
                                             {resolvingId === ticket.id ? 'Saving...' : 'Resolve'}
@@ -243,7 +247,6 @@ export default function ITDashboardPage() {
             </div>
         )}
 
-        {}
         {activeTab === 'users' && (
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="p-6 border-b border-gray-100 flex flex-col md:flex-row justify-between items-center bg-gray-50 gap-4">
@@ -255,12 +258,13 @@ export default function ITDashboardPage() {
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <Search className="h-4 w-4 text-gray-400" />
                         </div>
+                        {/* FIX 3: Added text-gray-900 */}
                         <input 
                             type="text" 
                             placeholder="Search by name, email, or ID..." 
                             value={userSearchTerm}
                             onChange={(e) => setUserSearchTerm(e.target.value)}
-                            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500" 
+                            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500" 
                         />
                     </div>
                 </div>
@@ -326,7 +330,6 @@ export default function ITDashboardPage() {
         )}
       </main>
 
-      {}
       {userToDelete && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
           <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">

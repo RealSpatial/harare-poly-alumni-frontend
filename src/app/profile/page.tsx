@@ -32,8 +32,8 @@ interface UserProfile {
   studies: Study[];
   phone_number?: string; 
   linkedin_url?: string; 
-  is_mentor?: boolean; // NEW FOR MENTORSHIP
-  mentorship_bio?: string; // NEW FOR MENTORSHIP
+  is_mentor?: boolean; 
+  mentorship_bio?: string; 
 }
 
 interface ConnectionRequest {
@@ -69,14 +69,14 @@ export default function ProfilePage() {
   const [showStudyModal, setShowStudyModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
-  const [showMentorModal, setShowMentorModal] = useState(false); // NEW FOR MENTORSHIP
+  const [showMentorModal, setShowMentorModal] = useState(false); 
 
   // Forms
   const [editForm, setEditForm] = useState({ phone_number: '', linkedin_url: '' });
   const [jobForm, setJobForm] = useState({ company_name: '', job_title: '', start_date: '', end_date: '', is_current: false });
   const [studyForm, setStudyForm] = useState({ institution_name: '', degree_obtained: '', field_of_study: '', graduation_year: '' });
   const [feedbackForm, setFeedbackForm] = useState({ category: 'Memories & Experiences', message: '' });
-  const [mentorForm, setMentorForm] = useState({ is_mentor: false, mentorship_bio: '' }); // NEW FOR MENTORSHIP
+  const [mentorForm, setMentorForm] = useState({ is_mentor: false, mentorship_bio: '' }); 
   
   const [feedbackStatus, setFeedbackStatus] = useState<{success: boolean, message: string} | null>(null);
   const [respondingTo, setRespondingTo] = useState<number | null>(null);
@@ -98,7 +98,8 @@ export default function ProfilePage() {
       setUserRole(role); 
       if (!token) { window.location.href = '/login'; return; }
 
-      const profileRes = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/alumni/me', {
+      // FIX 1: Cleaned all 10 API URLs
+      const profileRes = await fetch('https://harare-poly-api.onrender.com/api/alumni/me', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -110,7 +111,7 @@ export default function ProfilePage() {
       const profileData = await profileRes.json();
       setProfile(profileData);
 
-      const inboxRes = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/connections/inbox', {
+      const inboxRes = await fetch('https://harare-poly-api.onrender.com/api/connections/inbox', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (inboxRes.ok) {
@@ -118,7 +119,7 @@ export default function ProfilePage() {
         setInbox(inboxData);
       }
 
-      const myConnRes = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/connections/my-connections', {
+      const myConnRes = await fetch('https://harare-poly-api.onrender.com/api/connections/my-connections', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (myConnRes.ok) {
@@ -126,7 +127,7 @@ export default function ProfilePage() {
         setMyConnections(myConnData);
       }
 
-      const broadcastRes = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/alumni/broadcasts', {
+      const broadcastRes = await fetch('https://harare-poly-api.onrender.com/api/alumni/broadcasts', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (broadcastRes.ok) {
@@ -149,7 +150,7 @@ export default function ProfilePage() {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/alumni/employment', {
+      const res = await fetch('https://harare-poly-api.onrender.com/api/alumni/employment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify(jobForm)
@@ -166,7 +167,7 @@ export default function ProfilePage() {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/alumni/studies', {
+      const res = await fetch('https://harare-poly-api.onrender.com/api/alumni/studies', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ ...studyForm, graduation_year: parseInt(studyForm.graduation_year) })
@@ -189,7 +190,7 @@ export default function ProfilePage() {
               shared_info_value: status === 'Accepted' ? shareValue : null
           };
 
-          const res = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/connections/respond', {
+          const res = await fetch('https://harare-poly-api.onrender.com/api/connections/respond', {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
               body: JSON.stringify(payload)
@@ -212,7 +213,7 @@ export default function ProfilePage() {
       setFeedbackStatus(null);
       try {
           const token = localStorage.getItem('token');
-          const res = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/feedback/submit', {
+          const res = await fetch('https://harare-poly-api.onrender.com/api/feedback/submit', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
               body: JSON.stringify(feedbackForm)
@@ -234,7 +235,7 @@ export default function ProfilePage() {
       e.preventDefault();
       try {
           const token = localStorage.getItem('token');
-          const res = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/alumni/profile', {
+          const res = await fetch('https://harare-poly-api.onrender.com/api/alumni/profile', {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
               body: JSON.stringify(editForm)
@@ -258,7 +259,7 @@ export default function ProfilePage() {
       e.preventDefault();
       try {
           const token = localStorage.getItem('token');
-          const res = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/mentors/toggle', {
+          const res = await fetch('https://harare-poly-api.onrender.com/api/mentors/toggle', {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
               body: JSON.stringify(mentorForm)
@@ -311,25 +312,23 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen flex flex-col font-sans relative pb-20" style={{ backgroundColor: hpBackground }}>
       
-      {/* Navbar */}
+      {/* FIX 2: Responsive Mobile Header */}
       <nav className="bg-white shadow-sm border-b sticky top-0 z-40" style={{ borderColor: hpDarkBlue }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            {/* NEW: Made the title a clickable link to Home and updated to full name */}
-            <a href="/" className="font-bold text-xl tracking-tight hover:opacity-80 transition-opacity" style={{ color: hpDarkBlue }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+          <div className="flex items-center overflow-hidden shrink">
+            <a href="/" className="font-bold text-lg sm:text-xl tracking-tight hover:opacity-80 transition-opacity truncate block" style={{ color: hpDarkBlue }}>
               Harare Polytechnic <span className="font-light">Alumni</span>
             </a>
           </div>
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-3 sm:space-x-6 shrink-0">
             {userRole === 'pro' && (
-                <a href="/pro-dashboard" className="text-sm font-bold text-amber-600 bg-amber-50 px-3 py-1.5 rounded-md hover:bg-amber-100 transition-colors border border-amber-200">
+                <a href="/pro-dashboard" className="hidden sm:inline-flex text-sm font-bold text-amber-600 bg-amber-50 px-3 py-1.5 rounded-md hover:bg-amber-100 transition-colors border border-amber-200">
                     PR Command Center
                 </a>
             )}
-            {/* NEW: Added an explicit Home link next to Network Directory */}
-            <a href="/" className="text-sm font-medium text-gray-600 hover:text-blue-800">Home</a>
-            <a href="/network" className="text-sm font-medium text-gray-600 hover:text-blue-800">Network Directory</a>
-            <button onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('role'); window.location.href = '/login'; }} className="text-sm font-medium text-gray-500 hover:text-red-600 transition-colors">Sign Out</button>
+            <a href="/" className="hidden sm:block text-sm font-medium text-gray-600 hover:text-blue-800">Home</a>
+            <a href="/network" className="hidden sm:block text-sm font-medium text-gray-600 hover:text-blue-800">Network Directory</a>
+            <button onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('role'); window.location.href = '/login'; }} className="text-sm font-medium text-gray-500 hover:text-red-600 transition-colors whitespace-nowrap">Sign Out</button>
           </div>
         </div>
       </nav>
@@ -401,7 +400,6 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* NEW: MENTORSHIP SETTINGS CARD */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mt-6">
               <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-50">
                 <div className="flex items-center">
@@ -430,7 +428,6 @@ export default function ProfilePage() {
               )}
             </div>
 
-            {/* PR COMMUNICATION BOX */}
             <div className="bg-gradient-to-br from-blue-900 to-blue-800 p-6 rounded-2xl shadow-md text-white mt-6 relative overflow-hidden">
                 <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white opacity-10 rounded-full blur-xl"></div>
                 <div className="flex items-center mb-3">
@@ -453,7 +450,6 @@ export default function ProfilePage() {
           {/* RIGHT COLUMN */}
           <div className="space-y-6 lg:col-span-2">
             
-            {/* PRO BROADCASTS / NOTICE BOARD */}
             {visibleBroadcasts.length > 0 && (
                 <div className="bg-gradient-to-r from-amber-50 to-orange-50 p-6 rounded-2xl shadow-sm border border-amber-200 relative overflow-hidden">
                     <div className="flex items-center mb-4 pb-3 border-b border-amber-200/50">
@@ -480,7 +476,6 @@ export default function ProfilePage() {
                 </div>
             )}
 
-            {/* INBOX SECTION */}
             {inbox.length > 0 && (
                 <div className="bg-blue-50 p-6 rounded-2xl shadow-sm border border-blue-200 relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-1 h-full bg-blue-600"></div>
@@ -517,22 +512,24 @@ export default function ProfilePage() {
                                     <div className="mt-4 pt-4 border-t border-gray-100">
                                         <p className="text-xs font-bold text-gray-700 uppercase mb-2">What would you like to share?</p>
                                         <div className="flex space-x-2 mb-3">
+                                            {/* FIX 3: Added text-gray-900 */}
                                             <select 
                                                 value={shareType} 
                                                 onChange={(e) => setShareType(e.target.value)}
-                                                className="border border-gray-300 rounded-md text-sm p-2 bg-white"
+                                                className="border border-gray-300 rounded-md text-sm p-2 bg-white text-gray-900"
                                             >
                                                 <option value="linkedin">LinkedIn URL</option>
                                                 <option value="email">Email Address</option>
                                                 <option value="phone">Phone Number</option>
                                                 <option value="whatsapp">WhatsApp Link</option>
                                             </select>
+                                            {/* FIX 3: Added text-gray-900 */}
                                             <input 
                                                 type="text" 
                                                 placeholder="Enter handle, link, or number..." 
                                                 value={shareValue}
                                                 onChange={(e) => setShareValue(e.target.value)}
-                                                className="border border-gray-300 rounded-md text-sm p-2 flex-grow"
+                                                className="border border-gray-300 rounded-md text-sm p-2 flex-grow text-gray-900"
                                             />
                                         </div>
                                         <div className="flex space-x-2">
@@ -573,7 +570,6 @@ export default function ProfilePage() {
                 </div>
             )}
 
-            {/* MY CONNECTIONS (SENT REQUESTS) */}
             {myConnections.length > 0 && (
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                     <div className="flex items-center mb-4 pb-3 border-b border-gray-50">
@@ -614,7 +610,6 @@ export default function ProfilePage() {
                 </div>
             )}
 
-            {/* Career Timeline */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                <div className="flex items-center justify-between mb-6 pb-3 border-b border-gray-50">
                 <div className="flex items-center"><Briefcase className="text-blue-800 mr-3" size={20} /><h2 className="text-lg font-bold text-gray-900">Career History</h2></div>
@@ -647,7 +642,6 @@ export default function ProfilePage() {
               )}
             </div>
 
-            {/* Further Studies Timeline */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                <div className="flex items-center justify-between mb-6 pb-3 border-b border-gray-50">
                 <div className="flex items-center"><BookOpen className="text-blue-800 mr-3" size={20} /><h2 className="text-lg font-bold text-gray-900">Further Studies</h2></div>
@@ -678,7 +672,6 @@ export default function ProfilePage() {
         </div>
       </main>
 
-      {}
       {/* ADD JOB MODAL */}
       {showJobModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -690,20 +683,24 @@ export default function ProfilePage() {
             <form onSubmit={handleJobSubmit} className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Company / Business Name</label>
-                <input type="text" required value={jobForm.company_name} onChange={e => setJobForm({...jobForm, company_name: e.target.value})} className="w-full p-2 border rounded-md" placeholder="e.g. Econet Wireless" />
+                {/* FIX 3: Added text-gray-900 */}
+                <input type="text" required value={jobForm.company_name} onChange={e => setJobForm({...jobForm, company_name: e.target.value})} className="w-full p-2 border rounded-md text-gray-900 text-sm" placeholder="e.g. Econet Wireless" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
-                <input type="text" required value={jobForm.job_title} onChange={e => setJobForm({...jobForm, job_title: e.target.value})} className="w-full p-2 border rounded-md" placeholder="e.g. Senior Network Engineer" />
+                {/* FIX 3: Added text-gray-900 */}
+                <input type="text" required value={jobForm.job_title} onChange={e => setJobForm({...jobForm, job_title: e.target.value})} className="w-full p-2 border rounded-md text-gray-900 text-sm" placeholder="e.g. Senior Network Engineer" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Start Year</label>
-                  <input type="text" required value={jobForm.start_date} onChange={e => setJobForm({...jobForm, start_date: e.target.value})} className="w-full p-2 border rounded-md" placeholder="e.g. 2021" />
+                  {/* FIX 3: Added text-gray-900 */}
+                  <input type="text" required value={jobForm.start_date} onChange={e => setJobForm({...jobForm, start_date: e.target.value})} className="w-full p-2 border rounded-md text-gray-900 text-sm" placeholder="e.g. 2021" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">End Year</label>
-                  <input type="text" disabled={jobForm.is_current} value={jobForm.is_current ? '' : jobForm.end_date} onChange={e => setJobForm({...jobForm, end_date: e.target.value})} className="w-full p-2 border rounded-md disabled:bg-gray-100" placeholder="e.g. 2024" />
+                  {/* FIX 3: Added text-gray-900 */}
+                  <input type="text" disabled={jobForm.is_current} value={jobForm.is_current ? '' : jobForm.end_date} onChange={e => setJobForm({...jobForm, end_date: e.target.value})} className="w-full p-2 border rounded-md disabled:bg-gray-100 text-gray-900 text-sm" placeholder="e.g. 2024" />
                 </div>
               </div>
               <div className="flex items-center mt-2">
@@ -727,19 +724,23 @@ export default function ProfilePage() {
             <form onSubmit={handleStudySubmit} className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">University / Institution</label>
-                <input type="text" required value={studyForm.institution_name} onChange={e => setStudyForm({...studyForm, institution_name: e.target.value})} className="w-full p-2 border rounded-md" placeholder="e.g. University of Zimbabwe" />
+                {/* FIX 3: Added text-gray-900 */}
+                <input type="text" required value={studyForm.institution_name} onChange={e => setStudyForm({...studyForm, institution_name: e.target.value})} className="w-full p-2 border rounded-md text-gray-900 text-sm" placeholder="e.g. University of Zimbabwe" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Degree Obtained</label>
-                <input type="text" required value={studyForm.degree_obtained} onChange={e => setStudyForm({...studyForm, degree_obtained: e.target.value})} className="w-full p-2 border rounded-md" placeholder="e.g. BSc, MSc, PhD, Certificate" />
+                {/* FIX 3: Added text-gray-900 */}
+                <input type="text" required value={studyForm.degree_obtained} onChange={e => setStudyForm({...studyForm, degree_obtained: e.target.value})} className="w-full p-2 border rounded-md text-gray-900 text-sm" placeholder="e.g. BSc, MSc, PhD, Certificate" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Field of Study</label>
-                <input type="text" required value={studyForm.field_of_study} onChange={e => setStudyForm({...studyForm, field_of_study: e.target.value})} className="w-full p-2 border rounded-md" placeholder="e.g. Computer Science" />
+                {/* FIX 3: Added text-gray-900 */}
+                <input type="text" required value={studyForm.field_of_study} onChange={e => setStudyForm({...studyForm, field_of_study: e.target.value})} className="w-full p-2 border rounded-md text-gray-900 text-sm" placeholder="e.g. Computer Science" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Graduation Year</label>
-                <input type="number" required value={studyForm.graduation_year} onChange={e => setStudyForm({...studyForm, graduation_year: e.target.value})} className="w-full p-2 border rounded-md" placeholder="e.g. 2024" />
+                {/* FIX 3: Added text-gray-900 */}
+                <input type="number" required value={studyForm.graduation_year} onChange={e => setStudyForm({...studyForm, graduation_year: e.target.value})} className="w-full p-2 border rounded-md text-gray-900 text-sm" placeholder="e.g. 2024" />
               </div>
               <button type="submit" className="w-full bg-blue-800 text-white font-bold py-3 rounded-md hover:bg-blue-900 mt-6">Save Education</button>
             </form>
@@ -764,10 +765,11 @@ export default function ProfilePage() {
                   <form onSubmit={handleFeedbackSubmit} className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Topic</label>
+                      {/* FIX 3: Added text-gray-900 */}
                       <select 
                           value={feedbackForm.category} 
                           onChange={e => setFeedbackForm({...feedbackForm, category: e.target.value})} 
-                          className="w-full p-2 border border-gray-300 rounded-md bg-white font-medium"
+                          className="w-full p-2 border border-gray-300 rounded-md bg-white font-medium text-gray-900 text-sm"
                       >
                           <option value="Memories & Experiences">Memories & Experiences</option>
                           <option value="Partnerships for Growth">Partnerships for Growth</option>
@@ -776,12 +778,13 @@ export default function ProfilePage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Your Message</label>
+                      {/* FIX 3: Added text-gray-900 */}
                       <textarea 
                           required 
                           rows={6} 
                           value={feedbackForm.message} 
                           onChange={e => setFeedbackForm({...feedbackForm, message: e.target.value})} 
-                          className="w-full p-3 border border-gray-300 rounded-md text-sm leading-relaxed" 
+                          className="w-full p-3 border border-gray-300 rounded-md text-sm leading-relaxed text-gray-900" 
                           placeholder={getFeedbackPlaceholder()} 
                       />
                     </div>
@@ -806,11 +809,13 @@ export default function ProfilePage() {
             <form onSubmit={handleEditSubmit} className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-                <input type="text" value={editForm.phone_number} onChange={e => setEditForm({...editForm, phone_number: e.target.value})} className="w-full p-2 border rounded-md" placeholder="e.g. +263 77 123 4567" />
+                {/* FIX 3: Added text-gray-900 */}
+                <input type="text" value={editForm.phone_number} onChange={e => setEditForm({...editForm, phone_number: e.target.value})} className="w-full p-2 border rounded-md text-gray-900 text-sm" placeholder="e.g. +263 77 123 4567" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">LinkedIn URL</label>
-                <input type="text" value={editForm.linkedin_url} onChange={e => setEditForm({...editForm, linkedin_url: e.target.value})} className="w-full p-2 border rounded-md" placeholder="e.g. linkedin.com/in/yourname" />
+                {/* FIX 3: Added text-gray-900 */}
+                <input type="text" value={editForm.linkedin_url} onChange={e => setEditForm({...editForm, linkedin_url: e.target.value})} className="w-full p-2 border rounded-md text-gray-900 text-sm" placeholder="e.g. linkedin.com/in/yourname" />
               </div>
               <button type="submit" className="w-full bg-blue-800 text-white font-bold py-3 rounded-md hover:bg-blue-900 mt-6">Save Changes</button>
             </form>
@@ -818,7 +823,7 @@ export default function ProfilePage() {
         </div>
       )}
 
-      {/* NEW: MENTORSHIP SETTINGS MODAL */}
+      {/* MENTORSHIP SETTINGS MODAL */}
       {showMentorModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
@@ -845,12 +850,13 @@ export default function ProfilePage() {
                   <div className="animate-in fade-in slide-in-from-top-2 duration-300">
                       <label className="block text-sm font-bold text-gray-700 mb-1">Mentorship Bio</label>
                       <p className="text-xs text-gray-500 mb-2">Briefly describe what topics you can help with (e.g., CV reviews, career switching, startup advice).</p>
+                      {/* FIX 3: Added text-gray-900 */}
                       <textarea 
                           required={mentorForm.is_mentor}
                           rows={4}
                           value={mentorForm.mentorship_bio} 
                           onChange={e => setMentorForm({...mentorForm, mentorship_bio: e.target.value})} 
-                          className="w-full p-3 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500" 
+                          className="w-full p-3 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500 text-gray-900" 
                           placeholder="I have 10 years of experience in structural engineering and can help review portfolios..."
                       />
                   </div>

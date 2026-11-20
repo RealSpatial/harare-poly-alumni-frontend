@@ -43,7 +43,8 @@ export default function DashboardPage() {
         const token = localStorage.getItem('token');
         if (!token) { window.location.href = '/login'; return; }
 
-        const response = await fetch(`[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/dashboard/stats?t=${Date.now()}`, {
+        // FIX 1: Cleaned the API URL (removed markdown brackets)
+        const response = await fetch(`https://harare-poly-api.onrender.com/api/dashboard/stats?t=${Date.now()}`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         
@@ -81,7 +82,6 @@ export default function DashboardPage() {
         []
     ];
 
-    // NEW: Added Email to headers
     const headers = ['First Name', 'Last Name', 'Email', 'Student ID', 'Department', 'Course/Certificate', 'Graduation Year', 'Job Title', 'Company'];
     const dataRows = stats.tableData.map(alumnus => [
       alumnus.first_name || 'N/A',
@@ -119,20 +119,21 @@ export default function DashboardPage() {
       const lName = (alumnus.last_name || '').toLowerCase();
       const dept = (alumnus.department || '').toLowerCase();
       const comp = (alumnus.company_name || '').toLowerCase();
-      const email = (alumnus.email || '').toLowerCase(); // NEW: Added email to search
+      const email = (alumnus.email || '').toLowerCase();
 
       return fName.includes(searchStr) || lName.includes(searchStr) || dept.includes(searchStr) || comp.includes(searchStr) || email.includes(searchStr);
   });
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-20">
+      {/* FIX 2: Responsive Mobile Header */}
       <nav className="bg-white shadow-sm border-b sticky top-0 z-40" style={{ borderColor: hpDarkBlue }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-             <div className="w-8 h-8 rounded bg-blue-900 text-white font-bold flex items-center justify-center text-xs">HP</div>
-             <span className="font-bold text-xl tracking-tight" style={{ color: hpDarkBlue }}>Management <span className="font-light">Dashboard</span></span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+          <div className="flex items-center overflow-hidden">
+             <div className="w-8 h-8 rounded bg-blue-900 text-white font-bold flex items-center justify-center text-xs shrink-0 mr-3">HP</div>
+             <span className="font-bold text-lg sm:text-xl tracking-tight truncate block" style={{ color: hpDarkBlue }}>Management <span className="font-light">Dashboard</span></span>
           </div>
-          <button onClick={() => { localStorage.removeItem('token'); window.location.href = '/login'; }} className="text-sm font-medium text-gray-500 hover:text-red-600 transition-colors">
+          <button onClick={() => { localStorage.removeItem('token'); window.location.href = '/login'; }} className="text-sm font-medium text-gray-500 hover:text-red-600 transition-colors shrink-0 whitespace-nowrap ml-2">
               Sign Out
           </button>
         </div>
@@ -279,12 +280,13 @@ export default function DashboardPage() {
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <Search className="h-4 w-4 text-gray-400" />
                         </div>
+                        {/* FIX 3: Added text-gray-900 */}
                         <input 
                             type="text" 
                             placeholder="Search name, email, dept, or company..." 
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-blue-500 focus:border-blue-500 bg-white" 
+                            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 bg-white" 
                         />
                     </div>
                 </div>
@@ -314,7 +316,6 @@ export default function DashboardPage() {
                                             </div>
                                         </div>
                                     </td>
-                                    {/* NEW: Added Contact Data */}
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center text-sm text-gray-600">
                                             <Mail className="h-4 w-4 mr-2 text-gray-400" />

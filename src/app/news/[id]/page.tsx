@@ -19,7 +19,8 @@ export default function ArticlePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/stories/${params.id}`)
+    // FIX 1: Cleaned API URL (removed markdown brackets, kept template literal)
+    fetch(`https://harare-poly-api.onrender.com/api/stories/${params.id}`)
       .then(res => res.json())
       .then(data => {
         setStory(data);
@@ -37,14 +38,16 @@ export default function ArticlePage() {
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-20">
       
-      {/* Mini Navbar */}
+      {/* FIX 2: Responsive Mobile Header */}
       <nav className="bg-white shadow-sm border-b sticky top-0 z-40">
-        <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-          <a href="/" className="text-gray-500 hover:text-blue-800 transition-colors flex items-center text-sm font-bold uppercase tracking-wider">
-            <ArrowLeft size={18} className="mr-2" /> Back to Network
+        <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between gap-2">
+          <a href="/" className="text-gray-500 hover:text-blue-800 transition-colors flex items-center text-sm font-bold uppercase tracking-wider shrink-0">
+            <ArrowLeft size={18} className="mr-2" /> 
+            <span className="hidden sm:block">Back to Network</span>
           </a>
-          <div className="flex items-center text-blue-800 font-bold">
-            <Award className="mr-2" size={20}/> Alumni Spotlight
+          <div className="flex-1 overflow-hidden flex justify-end items-center text-blue-800 font-bold pl-4">
+            <Award className="mr-2 shrink-0" size={20}/> 
+            <span className="truncate block">Alumni Spotlight</span>
           </div>
         </div>
       </nav>

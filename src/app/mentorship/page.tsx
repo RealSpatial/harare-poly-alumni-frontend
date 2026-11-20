@@ -36,7 +36,8 @@ export default function MentorshipPage() {
            return;
         }
 
-        const response = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/mentors', {
+        // FIX 1: Cleaned API URL
+        const response = await fetch('https://harare-poly-api.onrender.com/api/mentors', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -61,8 +62,8 @@ export default function MentorshipPage() {
 
       try {
           const token = localStorage.getItem('token');
-          // We route this right through our secure Post Office!
-          const res = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/connections/send', {
+          // FIX 1: Cleaned API URL
+          const res = await fetch('https://harare-poly-api.onrender.com/api/connections/send', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
               body: JSON.stringify({
@@ -90,12 +91,16 @@ export default function MentorshipPage() {
 
   return (
     <div className="min-h-screen flex flex-col font-sans" style={{ backgroundColor: hpBackground }}>
+      {/* FIX 2: Responsive Mobile Header */}
       <nav className="bg-white shadow-sm border-b sticky top-0 z-40" style={{ borderColor: hpDarkBlue }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <a href="/profile" className="flex items-center text-gray-600 hover:text-blue-800 transition-colors font-medium">
-            <ArrowLeft className="mr-2" size={20} /> Back to Profile
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+          <a href="/profile" className="flex items-center text-gray-600 hover:text-blue-800 transition-colors font-medium shrink-0">
+            <ArrowLeft className="mr-2" size={20} /> 
+            <span className="hidden sm:block">Back to Profile</span>
           </a>
-          <span className="font-bold text-lg" style={{ color: hpDarkBlue }}>Mentorship Hub</span>
+          <div className="flex-1 text-right pl-4 overflow-hidden">
+            <span className="font-bold text-lg sm:text-xl tracking-tight truncate block" style={{ color: hpDarkBlue }}>Mentorship Hub</span>
+          </div>
         </div>
       </nav>
 
@@ -196,12 +201,13 @@ export default function MentorshipPage() {
                         </div>
                         <div>
                             <label className="block text-sm font-bold text-gray-700 mb-1">Your Intro Message</label>
+                            {/* FIX 3: Added text-gray-900 */}
                             <textarea 
                                 required 
                                 rows={4}
                                 value={message}
                                 onChange={(e) => setMessage(e.target.value)}
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm" 
+                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-sm" 
                                 placeholder={`Hi ${selectedMentor.first_name}, I am looking for guidance on...`}
                             />
                         </div>

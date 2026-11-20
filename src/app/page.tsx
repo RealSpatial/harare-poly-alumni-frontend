@@ -26,7 +26,7 @@ export default function LandingPage() {
   const [dotOffsets, setDotOffsets] = useState<Record<number, { x: number, y: number }>>({});
   const [btnCenter, setBtnCenter] = useState({ x: 600, y: 250 });
   const [zoneSize, setZoneSize] = useState({ w: 1200, h: 600 });
-  const [isHovering, setIsHovering] = useState(false); // Tracks if the mouse is in the network zone
+  const [isHovering, setIsHovering] = useState(false); 
 
   const dots = [
     { id: 1, left: '10%', top: '20%', size: 8 },
@@ -66,21 +66,21 @@ export default function LandingPage() {
       setUserRole(role);
     }
 
-    fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/pro/gallery')
+    fetch('https://harare-poly-api.onrender.com/api/pro/gallery')
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) setGallery(data);
       })
       .catch(err => console.error("Failed to load gallery", err));
 
-    fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/stories/latest')
+    fetch('https://harare-poly-api.onrender.com/api/stories/latest')
       .then(res => res.json())
       .then(data => {
         if (data) setSpotlight(data);
       })
       .catch(err => console.error("Failed to load spotlight", err));
     
-    fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/public/trends')
+    fetch('https://harare-poly-api.onrender.com/api/public/trends')
       .then(res => res.json())
       .then(data => {
         if (data) setTrends(data);
@@ -153,7 +153,7 @@ export default function LandingPage() {
   const handleMouseLeave = () => {
     setBtnOffset({ x: 0, y: 0 });
     setDotOffsets({});
-    setIsHovering(false); // Disable waves when mouse leaves
+    setIsHovering(false);
   };
 
   const getDotX = (dot: any, offX: number) => (parseFloat(dot.left) / 100) * zoneSize.w + offX;
@@ -167,12 +167,13 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-20">
             <div className="flex items-center space-x-3">
-              <div className="relative w-12 h-16 flex items-center justify-center">
+              <div className="relative w-12 h-16 flex items-center justify-center shrink-0">
                 <img src="/logo.png" alt="Harare Polytechnic Logo" className="w-full h-full object-contain" />
               </div>
-              <span className="font-bold text-xl md:text-2xl tracking-tight" style={{ color: hpDarkBlue }}>
+              {/* MOBILE HEADER FIX: Smaller base text, hid the word "Network" on phones */}
+              <span className="font-bold text-lg sm:text-xl md:text-2xl tracking-tight" style={{ color: hpDarkBlue }}>
                 Harare Polytechnic <br className="hidden md:block lg:hidden" />
-                <span className="text-gray-500 text-sm md:text-lg font-normal">Alumni Network</span>
+                <span className="text-gray-500 text-sm md:text-lg font-normal">Alumni <span className="hidden sm:inline">Network</span></span>
               </span>
             </div>
 
@@ -244,13 +245,34 @@ export default function LandingPage() {
           onMouseLeave={handleMouseLeave}
         >
           
-          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-full h-full max-w-7xl -z-10 opacity-10">
+          {/* MOBILE CSS ANIMATED BACKGROUND (Hidden on Desktop) */}
+          <div className="md:hidden absolute inset-0 overflow-hidden pointer-events-none -z-10">
+             <style>
+                 {`
+                 @keyframes float1 {
+                     0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+                     50% { transform: translate(-20vw, 15vh) scale(1.2); opacity: 0.7; }
+                 }
+                 @keyframes float2 {
+                     0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+                     50% { transform: translate(20vw, -10vh) scale(1.1); opacity: 0.6; }
+                 }
+                 .blob-1 { animation: float1 10s ease-in-out infinite; }
+                 .blob-2 { animation: float2 12s ease-in-out infinite; }
+                 `}
+             </style>
+             <div className="absolute top-10 -right-20 w-72 h-72 rounded-full blob-1" style={{ backgroundColor: hpLightBlue, filter: 'blur(60px)' }}></div>
+             <div className="absolute top-40 -left-20 w-80 h-80 rounded-full blob-2" style={{ backgroundColor: hpDarkBlue, filter: 'blur(60px)' }}></div>
+          </div>
+
+          {/* DESKTOP STATIC BACKGROUND (Hidden on Mobile) */}
+          <div className="hidden md:block absolute top-0 left-1/2 transform -translate-x-1/2 w-full h-full max-w-7xl -z-10 opacity-10">
              <div className="absolute top-20 right-0 w-96 h-96 rounded-full" style={{ backgroundColor: hpLightBlue, filter: 'blur(100px)' }}></div>
              <div className="absolute -top-20 -left-20 w-72 h-72 rounded-full" style={{ backgroundColor: hpDarkBlue, filter: 'blur(80px)' }}></div>
           </div>
 
-          <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
-            {/* NEW: Expanding Impact Waves */}
+          {/* DESKTOP MAGNETIC SVG (Hidden on Mobile) */}
+          <svg className="hidden md:block absolute inset-0 w-full h-full pointer-events-none z-0">
             {isHovering && (
                 <g>
                     <style>

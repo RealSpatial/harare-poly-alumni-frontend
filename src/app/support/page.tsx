@@ -27,15 +27,18 @@ export default function SupportPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans pb-20">
-      {/* Navbar */}
+      {/* FIX 1: Responsive Mobile Header */}
       <nav className="bg-white shadow-sm border-b sticky top-0 z-40" style={{ borderColor: hpDarkBlue }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <a href="/" className="flex items-center text-gray-600 hover:text-blue-800 transition-colors font-medium">
-            <ArrowLeft className="mr-2" size={20} /> Back to Home
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+          <a href="/" className="flex items-center text-gray-600 hover:text-blue-800 transition-colors font-medium shrink-0">
+            <ArrowLeft className="mr-2" size={20} /> 
+            <span className="hidden sm:block">Back to Home</span>
           </a>
-          <span className="font-bold text-xl tracking-tight" style={{ color: hpDarkBlue }}>
-            Help & <span className="font-light">Support</span>
-          </span>
+          <div className="flex-1 text-right pl-4 overflow-hidden">
+            <span className="font-bold text-lg sm:text-xl tracking-tight truncate block" style={{ color: hpDarkBlue }}>
+              Help & <span className="font-light">Support</span>
+            </span>
+          </div>
         </div>
       </nav>
 

@@ -33,7 +33,8 @@ export default function NetworkPage() {
         const token = localStorage.getItem('token');
         if (!token) { window.location.href = '/login'; return; }
 
-        const response = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/alumni/network', {
+        // FIX 1: Cleaned API URL
+        const response = await fetch('https://harare-poly-api.onrender.com/api/alumni/network', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -56,7 +57,8 @@ export default function NetworkPage() {
 
       try {
           const token = localStorage.getItem('token');
-          const res = await fetch('[https://harare-poly-api.onrender.com](https://harare-poly-api.onrender.com)/api/connections/send', {
+          // FIX 1: Cleaned API URL
+          const res = await fetch('https://harare-poly-api.onrender.com/api/connections/send', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
               body: JSON.stringify({
@@ -82,7 +84,6 @@ export default function NetworkPage() {
       }
   };
 
-  // DEEP SEARCH: Now searches names, departments, AND job titles
   const filteredAlumni = alumni.filter(person => {
     const fullName = `${person.first_name} ${person.last_name}`.toLowerCase();
     const dept = person.department.toLowerCase();
@@ -99,12 +100,16 @@ export default function NetworkPage() {
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-slate-50">
+      {/* FIX 2: Responsive Mobile Header */}
       <nav className="bg-white shadow-sm border-b border-blue-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <a href="/profile" className="flex items-center text-gray-600 hover:text-blue-800 font-medium">
-            <ArrowLeft className="mr-2" size={20} /> Back to Profile
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+          <a href="/profile" className="flex items-center text-gray-600 hover:text-blue-800 font-medium shrink-0">
+            <ArrowLeft className="mr-2" size={20} /> 
+            <span className="hidden sm:block">Back to Profile</span>
           </a>
-          <span className="font-bold text-xl tracking-tight text-blue-900">Alumni Directory</span>
+          <div className="flex-1 text-right pl-4 overflow-hidden">
+            <span className="font-bold text-lg sm:text-xl tracking-tight text-blue-900 truncate block">Alumni Directory</span>
+          </div>
         </div>
       </nav>
 
@@ -118,13 +123,13 @@ export default function NetworkPage() {
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-gray-400" />
             </div>
-            <input type="text" placeholder="Search professionals..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white" />
+            {/* FIX 3: Added text-gray-900 */}
+            <input type="text" placeholder="Search professionals..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900" />
           </div>
         </div>
 
         {loading && <div className="flex justify-center py-20"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-800"></div></div>}
         
-        {/* WE ADDED THIS ERROR BOX TO CATCH DATABASE ISSUES */}
         {error && (
           <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md my-8">
             <p className="text-red-700 font-bold">Backend Error: {error}</p>
@@ -177,7 +182,6 @@ export default function NetworkPage() {
         )}
       </main>
 
-      {}
       {selectedUser && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
@@ -199,12 +203,13 @@ export default function NetworkPage() {
                             Send a brief message explaining why you'd like to connect. {selectedUser.first_name} will have the option to accept and share their contact information or social handle.
                         </p>
                         <div>
+                            {/* FIX 3: Added text-gray-900 */}
                             <textarea 
                                 required 
                                 rows={4}
                                 value={connectionMessage}
                                 onChange={(e) => setConnectionMessage(e.target.value)}
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm" 
+                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-900 text-sm" 
                                 placeholder={`Hi ${selectedUser.first_name}, I saw you are working as a ${selectedUser.current_job || 'professional'} and would love to connect regarding...`}
                             />
                         </div>
