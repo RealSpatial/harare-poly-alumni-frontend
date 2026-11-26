@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Megaphone, MessageSquare, Mail, Send, Briefcase, CheckCircle, XCircle, ImageIcon, PlusCircle, Trash2, Award } from 'lucide-react';
+import { Megaphone, MessageSquare, Mail, Send, Briefcase, CheckCircle, XCircle, ImageIcon, PlusCircle, Trash2, Award, Store, Star, Phone, Tag } from 'lucide-react';
 
 interface FeedbackData {
   id: number;
@@ -33,8 +33,21 @@ interface GalleryItem {
   category: string;
 }
 
+interface MarketplaceItem {
+  id: number;
+  company_name: string;
+  title: string;
+  category: string;
+  description: string;
+  price: string;
+  image_url: string;
+  contact_phone: string;
+  contact_email: string;
+  is_featured: boolean;
+}
+
 export default function PRODashboardPage() {
-  const [activeTab, setActiveTab] = useState<'feedback' | 'jobs' | 'gallery' | 'stories'>('feedback');
+  const [activeTab, setActiveTab] = useState<'feedback' | 'jobs' | 'gallery' | 'stories' | 'marketplace'>('feedback');
   
   const [feedback, setFeedback] = useState<FeedbackData[]>([]);
   const [pendingJobs, setPendingJobs] = useState<PendingJob[]>([]);
@@ -44,6 +57,19 @@ export default function PRODashboardPage() {
 
   const [newStory, setNewStory] = useState({ title: '', excerpt: '', content: '', image_url: '' });
   const [publishStatus, setPublishStatus] = useState<{success: boolean, text: string} | null>(null);
+  const [marketplaceItems, setMarketplaceItems] = useState<MarketplaceItem[]>([]);
+  const [newMarketplaceItem, setNewMarketplaceItem] = useState({
+    company_name: '',
+    title: '',
+    category: 'Product',
+    description: '',
+    price: '',
+    image_url: '',
+    contact_phone: '',
+    contact_email: '',
+    is_featured: false
+  });
+  const [marketplaceStatus, setMarketplaceStatus] = useState<{success: boolean, text: string} | null>(null);
 
   const [loading, setLoading] = useState(true);
 
@@ -73,6 +99,9 @@ export default function PRODashboardPage() {
       } else if (activeTab === 'gallery') {
           const res = await fetch('https://harare-poly-api.onrender.com/api/gallery', { headers: { 'Authorization': `Bearer ${token}` }});
           if (res.ok) setGallery(await res.json());
+      } else if (activeTab === 'marketplace') {
+          const res = await fetch('https://harare-poly-api.onrender.com/api/marketplace');
+          if (res.ok) setMarketplaceItems(await res.json());
       }
     } catch (err) {
       console.error(err);
@@ -172,6 +201,73 @@ export default function PRODashboardPage() {
       }
   };
 
+  const handleAddMarketplaceItem = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setMarketplaceStatus(null);
+      try {
+          const token = localStorage.getItem('token');
+          const res = await fetch('https://harare-poly-api.onrender.com/api/pro/marketplace', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+              body: JSON.stringify(newMarketplaceItem)
+          });
+          if (res.ok) {
+              setMarketplaceStatus({ success: true, text: "Listing added to Harare Polytechnic Marketplace!" });
+              setNewMarketplaceItem({
+                  company_name: '',
+                  title: '',
+                  category: 'Product',
+                  description: '',
+                  price: '',
+                  image_url: '',
+                  contact_phone: '',
+                  contact_email: '',
+                  is_featured: false
+              });
+              fetchPROData();
+              setTimeout(() => setMarketplaceStatus(null), 4000);
+          } else {
+              setMarketplaceStatus({ success: false, text: "Failed to add listing." });
+          }
+      } catch (err) {
+          setMarketplaceStatus({ success: false, text: "Server error." });
+      }
+  };
+
+  const handleToggleFeatured = async (id: number, currentStatus: boolean) => {
+      try {
+          const token = localStorage.getItem('token');
+          const res = await fetch(`https://harare-poly-api.onrender.com/api/pro/marketplace/${id}/feature`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+              body: JSON.stringify({ is_featured: !currentStatus })
+          });
+          if (res.ok) {
+              setMarketplaceItems(prev =>
+                  prev.map(item => item.id === id ? { ...item, is_featured: !currentStatus } : item)
+              );
+          }
+      } catch (err) {
+          alert("Failed to update featured status.");
+      }
+  };
+
+  const handleDeleteMarketplaceItem = async (id: number) => {
+      if (!confirm("Delete this Marketplace listing?")) return;
+      try {
+          const token = localStorage.getItem('token');
+          const res = await fetch(`https://harare-poly-api.onrender.com/api/pro/marketplace/${id}`, {
+              method: 'DELETE',
+              headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (res.ok) {
+              setMarketplaceItems(prev => prev.filter(item => item.id !== id));
+          }
+      } catch (err) {
+          alert("Failed to delete listing.");
+      }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 font-sans pb-20">
       {/* FIX 2: Responsive Mobile Header */}
@@ -215,6 +311,12 @@ export default function PRODashboardPage() {
                 className={`whitespace-nowrap py-4 px-6 text-sm font-bold border-b-2 transition-colors flex items-center ${activeTab === 'stories' ? 'border-blue-800 text-blue-800' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
             >
                 <Award className="mr-2" size={18} /> Success Stories
+            </button>
+            <button 
+                onClick={() => setActiveTab('marketplace')}
+                className={`whitespace-nowrap py-4 px-6 text-sm font-bold border-b-2 transition-colors flex items-center ${activeTab === 'marketplace' ? 'border-blue-800 text-blue-800' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+            >
+                <Store className="mr-2" size={18} /> Marketplace
             </button>
         </div>
 
@@ -397,6 +499,191 @@ export default function PRODashboardPage() {
                                         </div>
                                     </form>
                                 </div>
+                            </div>
+                        </>
+                    )}
+                    {activeTab === 'marketplace' && (
+                        <>
+                            <div className="p-6 border-b border-gray-100 bg-emerald-50 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                                <div>
+                                    <h3 className="text-lg font-bold text-emerald-900">Harare Polytechnic Marketplace</h3>
+                                    <p className="text-xs text-emerald-700">Manage products and services from campus enterprises (e.g., Poly Fashions) and feature highlights on the Home Page.</p>
+                                </div>
+                                <span className="bg-emerald-200 text-emerald-900 text-xs font-bold px-3 py-1 rounded-full w-fit shrink-0">
+                                    {marketplaceItems.length} Listings
+                                </span>
+                            </div>
+
+                            {/* Add New Listing Form */}
+                            <div className="p-6 bg-white border-b border-gray-100">
+                                <h4 className="text-sm font-bold text-gray-900 mb-3 flex items-center">
+                                    <PlusCircle size={16} className="mr-2 text-emerald-600" /> Add Product or Service
+                                </h4>
+
+                                {marketplaceStatus && (
+                                    <div className={`p-3 rounded-md text-sm mb-4 font-medium ${marketplaceStatus.success ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+                                        {marketplaceStatus.text}
+                                    </div>
+                                )}
+
+                                <form onSubmit={handleAddMarketplaceItem} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <input
+                                        type="text"
+                                        required
+                                        value={newMarketplaceItem.company_name}
+                                        onChange={e => setNewMarketplaceItem({ ...newMarketplaceItem, company_name: e.target.value })}
+                                        placeholder="Business Unit / Company (e.g. Poly Fashions)"
+                                        className="p-2.5 border border-gray-300 rounded-md text-gray-900 text-sm"
+                                    />
+                                    <input
+                                        type="text"
+                                        required
+                                        value={newMarketplaceItem.title}
+                                        onChange={e => setNewMarketplaceItem({ ...newMarketplaceItem, title: e.target.value })}
+                                        placeholder="Product or Service Name"
+                                        className="p-2.5 border border-gray-300 rounded-md text-gray-900 text-sm"
+                                    />
+                                    <select
+                                        value={newMarketplaceItem.category}
+                                        onChange={e => setNewMarketplaceItem({ ...newMarketplaceItem, category: e.target.value })}
+                                        className="p-2.5 border border-gray-300 rounded-md bg-white text-gray-900 text-sm"
+                                    >
+                                        <option value="Product">Product</option>
+                                        <option value="Service">Service</option>
+                                    </select>
+                                    <input
+                                        type="text"
+                                        value={newMarketplaceItem.price}
+                                        onChange={e => setNewMarketplaceItem({ ...newMarketplaceItem, price: e.target.value })}
+                                        placeholder="Price (e.g. $25 USD or Request Quote)"
+                                        className="p-2.5 border border-gray-300 rounded-md text-gray-900 text-sm"
+                                    />
+                                    <input
+                                        type="text"
+                                        value={newMarketplaceItem.contact_phone}
+                                        onChange={e => setNewMarketplaceItem({ ...newMarketplaceItem, contact_phone: e.target.value })}
+                                        placeholder="Contact Phone (e.g. +263 77 123 4567)"
+                                        className="p-2.5 border border-gray-300 rounded-md text-gray-900 text-sm"
+                                    />
+                                    <input
+                                        type="email"
+                                        value={newMarketplaceItem.contact_email}
+                                        onChange={e => setNewMarketplaceItem({ ...newMarketplaceItem, contact_email: e.target.value })}
+                                        placeholder="Contact Email (e.g. fashions@hrepoly.ac.zw)"
+                                        className="p-2.5 border border-gray-300 rounded-md text-gray-900 text-sm"
+                                    />
+                                    <input
+                                        type="url"
+                                        value={newMarketplaceItem.image_url}
+                                        onChange={e => setNewMarketplaceItem({ ...newMarketplaceItem, image_url: e.target.value })}
+                                        placeholder="Image URL (https://...)"
+                                        className="p-2.5 border border-gray-300 rounded-md text-gray-900 text-sm md:col-span-2"
+                                    />
+                                    <textarea
+                                        required
+                                        rows={2}
+                                        value={newMarketplaceItem.description}
+                                        onChange={e => setNewMarketplaceItem({ ...newMarketplaceItem, description: e.target.value })}
+                                        placeholder="Short description of the product or service..."
+                                        className="p-2.5 border border-gray-300 rounded-md text-gray-900 text-sm md:col-span-2"
+                                    />
+                                    <label className="md:col-span-2 flex items-center space-x-2 text-sm text-gray-700 font-medium cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={newMarketplaceItem.is_featured}
+                                            onChange={e => setNewMarketplaceItem({ ...newMarketplaceItem, is_featured: e.target.checked })}
+                                            className="rounded border-gray-300 text-blue-800 focus:ring-blue-800"
+                                        />
+                                        <span>Feature on Home Page Showcase</span>
+                                    </label>
+                                    <button
+                                        type="submit"
+                                        className="md:col-span-2 bg-emerald-700 text-white font-bold py-2.5 rounded-md hover:bg-emerald-800 transition-colors"
+                                    >
+                                        Publish to Marketplace
+                                    </button>
+                                </form>
+                            </div>
+
+                            {/* Existing Listings */}
+                            <div className="p-6 overflow-y-auto flex-grow bg-slate-50">
+                                {loading ? (
+                                    <div className="text-center py-10">
+                                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-800 mx-auto"></div>
+                                    </div>
+                                ) : marketplaceItems.length === 0 ? (
+                                    <div className="text-center py-12 text-gray-500 text-sm">
+                                        No marketplace listings yet. Add your first product or service above.
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        {marketplaceItems.map((item) => (
+                                            <div key={item.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
+                                                <div className="h-36 w-full bg-gray-100 relative overflow-hidden">
+                                                    {item.image_url ? (
+                                                        <img src={item.image_url} alt={item.title} loading="lazy" className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center text-gray-300">
+                                                            <Store size={36} />
+                                                        </div>
+                                                    )}
+                                                    <span className="absolute top-2 left-2 bg-blue-900/90 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">
+                                                        {item.company_name}
+                                                    </span>
+                                                    <span className="absolute top-2 right-2 bg-white/95 text-gray-700 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                                        {item.category}
+                                                    </span>
+                                                </div>
+
+                                                <div className="p-4 flex flex-col flex-grow">
+                                                    <div className="flex justify-between items-start gap-2 mb-1">
+                                                        <h5 className="font-bold text-gray-900 text-sm line-clamp-1">{item.title}</h5>
+                                                        <button
+                                                            onClick={() => handleDeleteMarketplaceItem(item.id)}
+                                                            className="text-red-400 hover:text-red-600 shrink-0"
+                                                            title="Delete listing"
+                                                        >
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    </div>
+
+                                                    {item.price && (
+                                                        <div className="inline-flex items-center text-xs font-bold text-emerald-700 mb-2">
+                                                            <Tag size={12} className="mr-1 shrink-0" /> {item.price}
+                                                        </div>
+                                                    )}
+
+                                                    <p className="text-xs text-gray-600 line-clamp-2 mb-3 flex-grow">{item.description}</p>
+
+                                                    <div className="text-[11px] text-gray-500 space-y-1 mb-3">
+                                                        {item.contact_phone && (
+                                                            <div className="flex items-center truncate">
+                                                                <Phone size={12} className="mr-1.5 shrink-0 text-blue-800" /> {item.contact_phone}
+                                                            </div>
+                                                        )}
+                                                        {item.contact_email && (
+                                                            <div className="flex items-center truncate">
+                                                                <Mail size={12} className="mr-1.5 shrink-0 text-blue-800" /> {item.contact_email}
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    <button
+                                                        onClick={() => handleToggleFeatured(item.id, item.is_featured)}
+                                                        className={`w-full py-2 px-3 rounded-md text-xs font-bold flex items-center justify-center transition-colors ${
+                                                            item.is_featured
+                                                                ? 'bg-amber-100 text-amber-800 border border-amber-300 hover:bg-amber-200'
+                                                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                                        }`}
+                                                    >
+                                                        <Star size={14} className={`mr-1.5 shrink-0 ${item.is_featured ? 'fill-amber-500 text-amber-500' : ''}`} />
+                                                        {item.is_featured ? 'Featured on Home Page' : 'Feature on Home Page'}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </>
                     )}

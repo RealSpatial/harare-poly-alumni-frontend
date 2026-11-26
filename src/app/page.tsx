@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { GraduationCap, Briefcase, Building2, MessageSquare, ArrowRight, Menu, X, ChevronRight, TrendingUp, Award, Users } from 'lucide-react';
+import { GraduationCap, Briefcase, Building2, MessageSquare, ArrowRight, Menu, X, ChevronRight, TrendingUp, Award, Users, Store, Tag } from 'lucide-react';
 import Link from 'next/link';
 
 interface GalleryItem {
@@ -12,6 +12,16 @@ interface GalleryItem {
   category: string;
 }
 
+interface MarketplaceItem {
+  id: number;
+  company_name: string;
+  title: string;
+  category: string;
+  description: string;
+  price: string;
+  image_url: string;
+}
+
 export default function LandingPage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -19,6 +29,7 @@ export default function LandingPage() {
   const [gallery, setGallery] = useState<GalleryItem[]>([]);
   const [spotlight, setSpotlight] = useState<any>(null);
   const [trends, setTrends] = useState<any>(null);
+  const [marketplaceItems, setMarketplaceItems] = useState<MarketplaceItem[]>([]);
 
   // --- MAGNETIC NETWORK STATE ---
   const zoneRef = useRef<HTMLDivElement>(null);
@@ -86,7 +97,14 @@ export default function LandingPage() {
       .then(data => {
         if (data) setTrends(data);
       })
-      .catch(err => console.error("Failed to load trends", err));  
+      .catch(err => console.error("Failed to load trends", err));
+      
+    fetch('https://harare-poly-api.onrender.com/api/marketplace?featured=true')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) setMarketplaceItems(data);
+      })
+      .catch(err => console.error("Failed to load marketplace highlights", err));  
 
       const updateCenter = () => {
         if (zoneRef.current && btnRef.current) {
@@ -182,6 +200,7 @@ export default function LandingPage() {
               <Link href="/directory" className="text-gray-600 hover:text-blue-800 font-medium transition-colors">Directory</Link>
               <Link href="/careers" className="text-gray-600 hover:text-blue-800 font-medium transition-colors">Careers</Link>
               <Link href="/mentorship" className="text-gray-600 hover:text-blue-800 font-medium transition-colors">Mentorship</Link>
+              <Link href="/marketplace" className="text-gray-600 hover:text-blue-800 font-medium transition-colors">Marketplace</Link>
               
               {isLoggedIn ? (
                 <Link href={getDashboardLink()}
@@ -214,6 +233,7 @@ export default function LandingPage() {
               <Link href="/directory" className="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-800">Directory</Link>
               <Link href="/careers" className="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-800">Careers</Link>
               <Link href="/mentorship" className="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-800">Mentorship</Link>
+              <Link href="/marketplace" className="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-800">Marketplace</Link>
               <div className="px-3 py-3">
                 {isLoggedIn ? (
                   <Link href={getDashboardLink()}
@@ -562,6 +582,89 @@ export default function LandingPage() {
                 </div>
               )}
             </div>
+          </div>
+        </div>
+        {/* Harare Polytechnic Marketplace Showcase */}
+        <div className="py-20 bg-slate-50 border-t border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-12">
+              <div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 flex items-center" style={{ color: hpDarkBlue }}>
+                  <Store className="mr-3 shrink-0" size={30} />
+                  Harare Polytechnic Marketplace
+                </h2>
+                <p className="mt-3 text-gray-600 max-w-2xl text-sm sm:text-base">
+                  Explore quality products and professional services offered by Harare Polytechnic enterprises and business units.
+                </p>
+              </div>
+              <Link href="/marketplace" className="flex shrink-0 text-blue-700 font-semibold hover:text-blue-900 items-center">
+                Visit Marketplace <ChevronRight size={20} className="ml-1" />
+              </Link>
+            </div>
+
+            {marketplaceItems.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                {marketplaceItems.slice(0, 3).map((item) => (
+                  <Link
+                    key={item.id}
+                    href="/marketplace"
+                    className="group bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all flex flex-col"
+                  >
+                    <div className="h-52 bg-slate-100 overflow-hidden relative">
+                      {item.image_url ? (
+                        <img
+                          src={item.image_url}
+                          alt={item.title}
+                          loading="lazy"
+                          className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-300">
+                          <Store size={44} />
+                        </div>
+                      )}
+                      <span
+                        className="absolute top-3 left-3 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm"
+                        style={{ backgroundColor: hpDarkBlue }}
+                      >
+                        {item.company_name}
+                      </span>
+                    </div>
+                    <div className="p-6 flex flex-col flex-grow">
+                      <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-800 transition-colors line-clamp-1">
+                        {item.title}
+                      </h3>
+                      {item.price && (
+                        <div className="inline-flex items-center text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md w-fit mb-3">
+                          <Tag size={13} className="mr-1 shrink-0" />
+                          {item.price}
+                        </div>
+                      )}
+                      <p className="text-gray-600 text-sm leading-relaxed line-clamp-2 flex-grow">
+                        {item.description}
+                      </p>
+                      <span className="mt-4 text-sm font-semibold text-blue-700 flex items-center">
+                        View Details &amp; Contact <ArrowRight size={15} className="ml-1 group-hover:translate-x-1 transition-transform" />
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white rounded-2xl border border-gray-100 p-10 text-center shadow-sm">
+                <Store className="mx-auto text-blue-900/30 mb-3" size={40} />
+                <p className="text-gray-600 text-sm sm:text-base mb-5">
+                  Discover products and services from Harare Polytechnic business units like Poly Fashions and more.
+                </p>
+                <Link
+                  href="/marketplace"
+                  className="inline-flex items-center px-6 py-3 rounded-lg text-white font-semibold shadow-sm hover:opacity-90 transition-opacity"
+                  style={{ backgroundColor: hpDarkBlue }}
+                >
+                  Explore Marketplace <ArrowRight size={18} className="ml-2" />
+                </Link>
+              </div>
+            )}
           </div>
         </div>
 
