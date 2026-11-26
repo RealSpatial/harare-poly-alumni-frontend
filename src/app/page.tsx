@@ -118,7 +118,7 @@ export default function LandingPage() {
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!zoneRef.current) return;
+    if (!zoneRef.current || window.innerWidth < 1024 || window.innerHeight < 600) return;
     const rect = zoneRef.current.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
@@ -271,98 +271,98 @@ export default function LandingPage() {
              <div className="absolute -top-20 -left-20 w-72 h-72 rounded-full" style={{ backgroundColor: hpDarkBlue, filter: 'blur(80px)' }}></div>
           </div>
 
-          {/* DESKTOP MAGNETIC SVG (Hidden on Mobile) */}
-          <svg className="hidden md:block absolute inset-0 w-full h-full pointer-events-none z-0">
-            {isHovering && (
-                <g>
-                    <style>
-                        {`
-                        @keyframes impactWave {
-                            0% { r: 50px; opacity: 0.5; stroke-width: 2px; }
-                            100% { r: 600px; opacity: 0; stroke-width: 0.5px; }
-                        }
-                        .wave-circle {
-                            fill: none;
-                            stroke: ${hpLightBlue};
-                            animation: impactWave 3s infinite cubic-bezier(0.1, 0.4, 0.8, 1);
-                        }
-                        .wave-2 { animation-delay: 1s; }
-                        .wave-3 { animation-delay: 2s; }
-                        `}
-                    </style>
-                    <circle cx={btnCenter.x + btnOffset.x} cy={btnCenter.y + btnOffset.y} className="wave-circle" />
-                    <circle cx={btnCenter.x + btnOffset.x} cy={btnCenter.y + btnOffset.y} className="wave-circle wave-2" />
-                    <circle cx={btnCenter.x + btnOffset.x} cy={btnCenter.y + btnOffset.y} className="wave-circle wave-3" />
-                </g>
-            )}
+          {/* MAGNETIC SVG: Wave runs always; Spider Web hidden on mobile portrait & landscape */}
+          <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
+            <g>
+                <style>
+                    {`
+                    @keyframes impactWave {
+                        0% { r: 50px; opacity: 0.5; stroke-width: 2px; }
+                        100% { r: 600px; opacity: 0; stroke-width: 0.5px; }
+                    }
+                    .wave-circle {
+                        fill: none;
+                        stroke: ${hpLightBlue};
+                        animation: impactWave 3s infinite cubic-bezier(0.1, 0.4, 0.8, 1);
+                    }
+                    .wave-2 { animation-delay: 1s; }
+                    .wave-3 { animation-delay: 2s; }
+                    `}
+                </style>
+                <circle cx={btnCenter.x + btnOffset.x} cy={btnCenter.y + btnOffset.y} className="wave-circle" />
+                <circle cx={btnCenter.x + btnOffset.x} cy={btnCenter.y + btnOffset.y} className="wave-circle wave-2" />
+                <circle cx={btnCenter.x + btnOffset.x} cy={btnCenter.y + btnOffset.y} className="wave-circle wave-3" />
+            </g>
 
-            {edges.map((edge, i) => {
-                const d1 = dots.find(d => d.id === edge[0]);
-                const d2 = dots.find(d => d.id === edge[1]);
-                if(!d1 || !d2) return null;
-                const off1 = dotOffsets[d1.id] || { x: 0, y: 0 };
-                const off2 = dotOffsets[d2.id] || { x: 0, y: 0 };
-                return (
-                    <line
-                        key={`edge-${i}`}
-                        x1={getDotX(d1, off1.x)}
-                        y1={getDotY(d1, off1.y)}
-                        x2={getDotX(d2, off2.x)}
-                        y2={getDotY(d2, off2.y)}
-                        stroke={hpDarkBlue}
-                        strokeWidth="1" 
-                        opacity="0.2"
-                        style={{ transition: 'x1 0.2s ease-out, y1 0.2s ease-out, x2 0.2s ease-out, y2 0.2s ease-out' }}
-                    />
-                );
-            })}
-            
-            {centerEdges.map((dotId, i) => {
-                const d1 = dots.find(d => d.id === dotId);
-                if(!d1) return null;
-                const off1 = dotOffsets[d1.id] || { x: 0, y: 0 };
-                return (
-                    <line
-                        key={`cedge-${i}`}
-                        x1={getDotX(d1, off1.x)}
-                        y1={getDotY(d1, off1.y)}
-                        x2={btnCenter.x + btnOffset.x}
-                        y2={btnCenter.y + btnOffset.y}
-                        stroke={hpDarkBlue}
-                        strokeWidth="1" 
-                        opacity="0.25"
-                        style={{ transition: 'x1 0.2s ease-out, y1 0.2s ease-out, x2 0.2s ease-out, y2 0.2s ease-out' }}
-                    />
-                );
-            })}
+            <g className="hidden lg:[@media(min-height:600px)]:block">
+              {edges.map((edge, i) => {
+                  const d1 = dots.find(d => d.id === edge[0]);
+                  const d2 = dots.find(d => d.id === edge[1]);
+                  if(!d1 || !d2) return null;
+                  const off1 = dotOffsets[d1.id] || { x: 0, y: 0 };
+                  const off2 = dotOffsets[d2.id] || { x: 0, y: 0 };
+                  return (
+                      <line
+                          key={`edge-${i}`}
+                          x1={getDotX(d1, off1.x)}
+                          y1={getDotY(d1, off1.y)}
+                          x2={getDotX(d2, off2.x)}
+                          y2={getDotY(d2, off2.y)}
+                          stroke={hpDarkBlue}
+                          strokeWidth="1" 
+                          opacity="0.2"
+                          style={{ transition: 'x1 0.2s ease-out, y1 0.2s ease-out, x2 0.2s ease-out, y2 0.2s ease-out' }}
+                      />
+                  );
+              })}
+              
+              {centerEdges.map((dotId, i) => {
+                  const d1 = dots.find(d => d.id === dotId);
+                  if(!d1) return null;
+                  const off1 = dotOffsets[d1.id] || { x: 0, y: 0 };
+                  return (
+                      <line
+                          key={`cedge-${i}`}
+                          x1={getDotX(d1, off1.x)}
+                          y1={getDotY(d1, off1.y)}
+                          x2={btnCenter.x + btnOffset.x}
+                          y2={btnCenter.y + btnOffset.y}
+                          stroke={hpDarkBlue}
+                          strokeWidth="1" 
+                          opacity="0.25"
+                          style={{ transition: 'x1 0.2s ease-out, y1 0.2s ease-out, x2 0.2s ease-out, y2 0.2s ease-out' }}
+                      />
+                  );
+              })}
 
-            {dots.map(dot => {
-                const off = dotOffsets[dot.id] || { x: 0, y: 0 };
-                return (
-                    <circle
-                        key={`dot-${dot.id}`}
-                        cx={getDotX(dot, off.x)}
-                        cy={getDotY(dot, off.y)}
-                        r={dot.size / 2}
-                        fill={hpLightBlue}
-                        opacity="0.8"
-                        style={{ transition: 'cx 0.2s ease-out, cy 0.2s ease-out' }}
-                    />
-                );
-            })}
+              {dots.map(dot => {
+                  const off = dotOffsets[dot.id] || { x: 0, y: 0 };
+                  return (
+                      <circle
+                          key={`dot-${dot.id}`}
+                          cx={getDotX(dot, off.x)}
+                          cy={getDotY(dot, off.y)}
+                          r={dot.size / 2}
+                          fill={hpLightBlue}
+                          opacity="0.8"
+                          style={{ transition: 'cx 0.2s ease-out, cy 0.2s ease-out' }}
+                      />
+                  );
+              })}
+            </g>
           </svg>
 
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-24 md:pt-32 md:pb-32 pointer-events-none">
+          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16 lg:pt-32 lg:pb-32 pointer-events-none">
             <div className="text-center max-w-4xl mx-auto pointer-events-auto">
-              <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-gray-900 mb-6">
-                Connecting Generations of <br className="hidden md:block"/>
+              <h1 className="text-3xl sm:text-4xl lg:text-6xl font-extrabold tracking-tight text-gray-900 mb-6 text-balance">
+                Connecting Generations of <br className="hidden lg:block"/>
                 <span style={{ color: hpDarkBlue }}>Harare Polytechnic Excellence.</span>
               </h1>
               <p className="mt-4 text-lg md:text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed">
                 Since 1919, we have shaped industry leaders. Reconnect with classmates, track your career journey, and build the future of Zimbabwe's technical expertise.
               </p>
               
-              <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
+              <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6">
                 
                 {isLoggedIn ? (
                   <a href={getDashboardLink()}
@@ -465,7 +465,7 @@ export default function LandingPage() {
 
         <div className="py-20 bg-slate-50 border-t border-gray-200">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row justify-between items-end mb-12">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-12">
               <div>
                 <h2 className="text-3xl font-bold text-gray-900 flex items-center" style={{ color: hpDarkBlue }}>
                   <TrendingUp className="mr-3" size={32} />
@@ -473,7 +473,7 @@ export default function LandingPage() {
                 </h2>
                 <p className="mt-4 text-gray-600 max-w-2xl">Discover where our graduates are leading the market and shaping the future of Zimbabwe's and global technical sectors.</p>
               </div>
-              <a href="/careers" className="hidden md:flex text-blue-700 font-semibold hover:text-blue-900 items-center">
+              <a href="/careers" className="flex shrink-0 text-blue-700 font-semibold hover:text-blue-900 items-center">
                 Explore Job Board <ChevronRight size={20} className="ml-1"/>
               </a>
             </div>

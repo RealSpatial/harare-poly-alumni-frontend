@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Building2, Briefcase, MapPin, ArrowLeft, Globe, FileText } from 'lucide-react';
+import { Building2, Briefcase, MapPin, ArrowLeft, Globe, FileText, GraduationCap } from 'lucide-react';
 
 // Define the shape of our company data based on the PostgreSQL database
 interface Company {
@@ -98,13 +98,17 @@ export default function DirectoryPage() {
                 key={company.id} 
                 className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-100 overflow-hidden flex flex-col"
               >
-                <div className="h-2 w-full shrink-0" style={{ backgroundColor: hpDarkBlue }}></div>
+                <div
+                  className="h-2 w-full shrink-0"
+                  style={{ backgroundColor: company.is_alumni_owned ? '#d97706' : hpDarkBlue }}
+                ></div>
                 <div className="p-6 flex flex-col flex-grow">
-                  <div className="flex justify-between items-start mb-3">
+                  <div className="flex justify-between items-start gap-2 mb-3">
                     <h3 className="text-xl font-bold text-gray-900 leading-tight">{company.name}</h3>
                     {company.is_alumni_owned && (
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 uppercase tracking-wider shrink-0 ml-2">
-                        Alumni Owned
+                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200 shrink-0">
+                        <GraduationCap size={14} />
+                        Alumni-Founded
                       </span>
                     )}
                   </div>

@@ -331,6 +331,15 @@ export default function ProfilePage() {
             <button onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('role'); window.location.href = '/login'; }} className="text-sm font-medium text-gray-500 hover:text-red-600 transition-colors whitespace-nowrap">Sign Out</button>
           </div>
         </div>
+
+        {/* Mobile Portrait Sub-Bar */}
+        <div className="sm:hidden border-t border-gray-100 px-4 py-2 flex items-center justify-center space-x-6 bg-slate-50">
+          <a href="/" className="text-sm font-medium text-gray-700 hover:text-blue-800">Home</a>
+          <a href="/network" className="text-sm font-medium text-gray-700 hover:text-blue-800">Network Directory</a>
+          {userRole === 'pro' && (
+            <a href="/pro-dashboard" className="text-sm font-bold text-amber-600">PR Center</a>
+          )}
+        </div>
       </nav>
 
       <main className="flex-grow max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full z-10">
