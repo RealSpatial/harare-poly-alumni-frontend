@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { User, Users, Briefcase, GraduationCap, Edit3, Phone, Mail, Globe, Camera, Plus, X, BookOpen, Building, Bell, Check, MessageSquare, Lightbulb, Megaphone, Lock, Award } from 'lucide-react';
+import Link from 'next/link';
 
 interface Employment {
   id: number;
@@ -98,42 +99,31 @@ export default function ProfilePage() {
       setUserRole(role); 
       if (!token) { window.location.href = '/login'; return; }
 
-      // FIX 1: Cleaned all 10 API URLs
-      const profileRes = await fetch('https://harare-poly-api.onrender.com/api/alumni/me', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const headers = { 'Authorization': `Bearer ${token}` };
+
+      const [profileRes, inboxRes, myConnRes, broadcastRes] = await Promise.all([
+        fetch('https://harare-poly-api.onrender.com/api/alumni/me', { headers }),
+        fetch('https://harare-poly-api.onrender.com/api/connections/inbox', { headers }),
+        fetch('https://harare-poly-api.onrender.com/api/connections/my-connections', { headers }),
+        fetch('https://harare-poly-api.onrender.com/api/alumni/broadcasts', { headers }),
+      ]);
 
       if (!profileRes.ok) {
         const errData = await profileRes.json().catch(() => ({}));
         throw new Error(`Backend says: ${errData.error || profileRes.statusText} (Status Code: ${profileRes.status})`);
       }
-      
-      const profileData = await profileRes.json();
+
+      const [profileData, inboxData, myConnData, broadcastData] = await Promise.all([
+        profileRes.json(),
+        inboxRes.ok ? inboxRes.json() : null,
+        myConnRes.ok ? myConnRes.json() : null,
+        broadcastRes.ok ? broadcastRes.json() : null,
+      ]);
+
       setProfile(profileData);
-
-      const inboxRes = await fetch('https://harare-poly-api.onrender.com/api/connections/inbox', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (inboxRes.ok) {
-        const inboxData = await inboxRes.json();
-        setInbox(inboxData);
-      }
-
-      const myConnRes = await fetch('https://harare-poly-api.onrender.com/api/connections/my-connections', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (myConnRes.ok) {
-        const myConnData = await myConnRes.json();
-        setMyConnections(myConnData);
-      }
-
-      const broadcastRes = await fetch('https://harare-poly-api.onrender.com/api/alumni/broadcasts', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (broadcastRes.ok) {
-        const broadcastData = await broadcastRes.json();
-        setBroadcasts(broadcastData);
-      }
+      if (inboxData) setInbox(inboxData);
+      if (myConnData) setMyConnections(myConnData);
+      if (broadcastData) setBroadcasts(broadcastData);
 
     } catch (err: any) {
       setError(err.message);
@@ -316,28 +306,28 @@ export default function ProfilePage() {
       <nav className="bg-white shadow-sm border-b sticky top-0 z-40" style={{ borderColor: hpDarkBlue }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
           <div className="flex items-center overflow-hidden shrink">
-            <a href="/" className="font-bold text-lg sm:text-xl tracking-tight hover:opacity-80 transition-opacity truncate block" style={{ color: hpDarkBlue }}>
+            <Link href="/" className="font-bold text-lg sm:text-xl tracking-tight hover:opacity-80 transition-opacity truncate block" style={{ color: hpDarkBlue }}>
               Harare Polytechnic <span className="font-light">Alumni</span>
-            </a>
+            </Link>
           </div>
           <div className="flex items-center space-x-3 sm:space-x-6 shrink-0">
             {userRole === 'pro' && (
-                <a href="/pro-dashboard" className="hidden sm:inline-flex text-sm font-bold text-amber-600 bg-amber-50 px-3 py-1.5 rounded-md hover:bg-amber-100 transition-colors border border-amber-200">
+                <Link href="/pro-dashboard" className="hidden sm:inline-flex text-sm font-bold text-amber-600 bg-amber-50 px-3 py-1.5 rounded-md hover:bg-amber-100 transition-colors border border-amber-200">
                     PR Command Center
-                </a>
+                </Link>
             )}
-            <a href="/" className="hidden sm:block text-sm font-medium text-gray-600 hover:text-blue-800">Home</a>
-            <a href="/network" className="hidden sm:block text-sm font-medium text-gray-600 hover:text-blue-800">Network Directory</a>
+            <Link href="/" className="hidden sm:block text-sm font-medium text-gray-600 hover:text-blue-800">Home</Link>
+            <Link href="/network" className="hidden sm:block text-sm font-medium text-gray-600 hover:text-blue-800">Network Directory</Link>
             <button onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('role'); window.location.href = '/login'; }} className="text-sm font-medium text-gray-500 hover:text-red-600 transition-colors whitespace-nowrap">Sign Out</button>
           </div>
         </div>
 
         {/* Mobile Portrait Sub-Bar */}
         <div className="sm:hidden border-t border-gray-100 px-4 py-2 flex items-center justify-center space-x-6 bg-slate-50">
-          <a href="/" className="text-sm font-medium text-gray-700 hover:text-blue-800">Home</a>
-          <a href="/network" className="text-sm font-medium text-gray-700 hover:text-blue-800">Network Directory</a>
+          <Link href="/" className="text-sm font-medium text-gray-700 hover:text-blue-800">Home</Link>
+          <Link href="/network" className="text-sm font-medium text-gray-700 hover:text-blue-800">Network Directory</Link>
           {userRole === 'pro' && (
-            <a href="/pro-dashboard" className="text-sm font-bold text-amber-600">PR Center</a>
+            <Link href="/pro-dashboard" className="text-sm font-bold text-amber-600">PR Center</Link>
           )}
         </div>
       </nav>

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { GraduationCap, Briefcase, Building2, MessageSquare, ArrowRight, Menu, X, ChevronRight, TrendingUp, Award, Users } from 'lucide-react';
+import Link from 'next/link';
 
 interface GalleryItem {
   id: number;
@@ -178,24 +179,24 @@ export default function LandingPage() {
             </div>
 
             <div className="hidden md:flex items-center space-x-8">
-              <a href="/directory" className="text-gray-600 hover:text-blue-800 font-medium transition-colors">Directory</a>
-              <a href="/careers" className="text-gray-600 hover:text-blue-800 font-medium transition-colors">Careers</a>
-              <a href="/mentorship" className="text-gray-600 hover:text-blue-800 font-medium transition-colors">Mentorship</a>
+              <Link href="/directory" className="text-gray-600 hover:text-blue-800 font-medium transition-colors">Directory</Link>
+              <Link href="/careers" className="text-gray-600 hover:text-blue-800 font-medium transition-colors">Careers</Link>
+              <Link href="/mentorship" className="text-gray-600 hover:text-blue-800 font-medium transition-colors">Mentorship</Link>
               
               {isLoggedIn ? (
-                <a href={getDashboardLink()}
+                <Link href={getDashboardLink()}
                   className="px-6 py-2.5 rounded-md text-white font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
                   style={{ backgroundColor: hpDarkBlue }}
                 >
                   {getDashboardText()}
-                </a>
+                </Link>
               ) : (
-                <a href="/register"
+                <Link href="/register"
                   className="px-6 py-2.5 rounded-md text-white font-semibold shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
                   style={{ backgroundColor: hpLightBlue }}
                 >
                   Sign In
-                </a>
+                </Link>
               )}
             </div>
 
@@ -210,24 +211,24 @@ export default function LandingPage() {
         {isMobileMenuOpen && (
           <div className="md:hidden bg-white border-t border-gray-100 absolute w-full shadow-lg">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              <a href="/directory" className="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-800">Directory</a>
-              <a href="/careers" className="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-800">Careers</a>
-              <a href="/mentorship" className="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-800">Mentorship</a>
+              <Link href="/directory" className="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-800">Directory</Link>
+              <Link href="/careers" className="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-800">Careers</Link>
+              <Link href="/mentorship" className="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-800">Mentorship</Link>
               <div className="px-3 py-3">
                 {isLoggedIn ? (
-                  <a href={getDashboardLink()}
+                  <Link href={getDashboardLink()}
                     className="block w-full px-6 py-3 rounded-md text-white font-semibold text-center"
                     style={{ backgroundColor: hpDarkBlue }}
                   >
                     {getDashboardText()}
-                  </a>
+                  </Link>
                 ) : (
-                  <a href="/register"
+                  <Link href="/register"
                     className="block w-full px-6 py-3 rounded-md text-white font-semibold text-center"
                     style={{ backgroundColor: hpDarkBlue }}
                   >
                     Sign In
-                  </a>
+                  </Link>
                 )}
               </div>
             </div>
@@ -365,7 +366,7 @@ export default function LandingPage() {
               <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6">
                 
                 {isLoggedIn ? (
-                  <a href={getDashboardLink()}
+                  <Link href={getDashboardLink()}
                     ref={btnRef}
                     className="w-full sm:w-auto px-8 py-4 rounded-lg text-white font-bold text-lg shadow-xl hover:shadow-2xl transition-colors flex items-center justify-center group"
                     style={{ 
@@ -376,9 +377,9 @@ export default function LandingPage() {
                   >
                     Return to Dashboard
                     <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
-                  </a>
+                  </Link>
                 ) : (
-                  <a href="/register"
+                  <Link href="/register"
                     ref={btnRef}
                     className="w-full sm:w-auto px-8 py-4 rounded-lg text-white font-bold text-lg shadow-xl hover:shadow-2xl transition-colors flex items-center justify-center group"
                     style={{ 
@@ -389,12 +390,12 @@ export default function LandingPage() {
                   >
                     Join the Network
                     <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
-                  </a>
+                  </Link>
                 )}
 
-                <a href="/directory" className="w-full sm:w-auto px-8 py-4 rounded-lg text-gray-700 bg-white border border-gray-200 font-semibold text-lg shadow-sm hover:bg-gray-50 transition-colors flex items-center justify-center">
+                <Link href="/directory" className="w-full sm:w-auto px-8 py-4 rounded-lg text-gray-700 bg-white border border-gray-200 font-semibold text-lg shadow-sm hover:bg-gray-50 transition-colors flex items-center justify-center">
                   Corporate Partners
-                </a>
+                </Link>
               </div>
             </div>
           </div>
@@ -408,7 +409,7 @@ export default function LandingPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <a href="/profile" className="bg-slate-50 p-8 rounded-2xl border border-slate-100 hover:border-blue-200 hover:shadow-lg transition-all group block">
+              <Link href="/profile" className="bg-slate-50 p-8 rounded-2xl border border-slate-100 hover:border-blue-200 hover:shadow-lg transition-all group block">
                 <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-6 shadow-sm" style={{ backgroundColor: `${hpLightBlue}20`, color: hpDarkBlue }}>
                   <Briefcase size={28} />
                 </div>
@@ -419,9 +420,9 @@ export default function LandingPage() {
                 <p className="text-gray-600 leading-relaxed">
                   Log your employment history, promotions, and current role. See where other alumni are working.
                 </p>
-              </a>
+              </Link>
 
-              <a href="/profile" className="bg-slate-50 p-8 rounded-2xl border border-slate-100 hover:border-blue-200 hover:shadow-lg transition-all group block">
+              <Link href="/profile" className="bg-slate-50 p-8 rounded-2xl border border-slate-100 hover:border-blue-200 hover:shadow-lg transition-all group block">
                 <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-6 shadow-sm" style={{ backgroundColor: `${hpLightBlue}20`, color: hpDarkBlue }}>
                   <GraduationCap size={28} />
                 </div>
@@ -432,9 +433,9 @@ export default function LandingPage() {
                 <p className="text-gray-600 leading-relaxed">
                   Did you attain a degree after Harare Polytechnic? Add it to your profile and inspire current students.
                 </p>
-              </a>
+              </Link>
 
-              <a href="/startups" className="bg-slate-50 p-8 rounded-2xl border border-slate-100 hover:border-blue-200 hover:shadow-lg transition-all group block">
+              <Link href="/startups" className="bg-slate-50 p-8 rounded-2xl border border-slate-100 hover:border-blue-200 hover:shadow-lg transition-all group block">
                 <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-6 shadow-sm" style={{ backgroundColor: `${hpLightBlue}20`, color: hpDarkBlue }}>
                   <Building2 size={28} />
                 </div>
@@ -445,9 +446,9 @@ export default function LandingPage() {
                 <p className="text-gray-600 leading-relaxed">
                   Have you created your own company? Register it here so we can celebrate your entrepreneurial success.
                 </p>
-              </a>
+              </Link>
 
-              <a href="/profile" className="bg-slate-50 p-8 rounded-2xl border border-slate-100 hover:border-blue-200 hover:shadow-lg transition-all group block">
+              <Link href="/profile" className="bg-slate-50 p-8 rounded-2xl border border-slate-100 hover:border-blue-200 hover:shadow-lg transition-all group block">
                 <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-6 shadow-sm" style={{ backgroundColor: `${hpLightBlue}20`, color: hpDarkBlue }}>
                   <MessageSquare size={28} />
                 </div>
@@ -458,7 +459,7 @@ export default function LandingPage() {
                 <p className="text-gray-600 leading-relaxed">
                   Provide direct feedback to Management and HODs on how to improve the institution based on industry trends.
                 </p>
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -473,9 +474,9 @@ export default function LandingPage() {
                 </h2>
                 <p className="mt-4 text-gray-600 max-w-2xl">Discover where our graduates are leading the market and shaping the future of Zimbabwe's and global technical sectors.</p>
               </div>
-              <a href="/careers" className="flex shrink-0 text-blue-700 font-semibold hover:text-blue-900 items-center">
+              <Link href="/careers" className="flex shrink-0 text-blue-700 font-semibold hover:text-blue-900 items-center">
                 Explore Job Board <ChevronRight size={20} className="ml-1"/>
-              </a>
+              </Link>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -525,9 +526,9 @@ export default function LandingPage() {
                 </p>
                 
                 {spotlight ? (
-                  <a href={`/news/${spotlight.id}`} className="text-sm font-bold text-blue-300 hover:text-white flex items-center">
+                  <Link href={`/news/${spotlight.id}`} className="text-sm font-bold text-blue-300 hover:text-white flex items-center">
                     Read Full Story <ArrowRight size={16} className="ml-1"/>
-                  </a>
+                  </Link>
                 ) : (
                   <span className="text-sm font-bold text-blue-400">Loading...</span>
                 )}
@@ -548,7 +549,7 @@ export default function LandingPage() {
                 <div key={item.id} className="group rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all cursor-pointer">
                   <div className="h-56 overflow-hidden relative">
                     <div className="absolute top-4 left-4 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full z-10 shadow-md uppercase tracking-wider">{item.category}</div>
-                    <img src={item.image_url} alt={item.title} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
+                    <img src={item.image_url} alt={item.title} loading="lazy" className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" />
                   </div>
                   <div className="p-6">
                     <h3 className="text-xl font-bold text-gray-900 mb-2">{item.title}</h3>
@@ -577,7 +578,7 @@ export default function LandingPage() {
             <div className="flex space-x-6 mt-4 md:mt-0">
               <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
               <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
-              <a href="/support" className="hover:text-white transition-colors">IT Support</a>
+              <Link href="/support" className="hover:text-white transition-colors">IT Support</Link>
             </div>
           </div>
         </div>

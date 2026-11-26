@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Building2, Briefcase, MapPin, ArrowLeft, Globe, FileText, GraduationCap } from 'lucide-react';
+import Link from 'next/link';
 
 // Define the shape of our company data based on the PostgreSQL database
 interface Company {
@@ -52,13 +53,13 @@ export default function DirectoryPage() {
       {/* FIX 3: Responsive Mobile Header */}
       <nav className="bg-white shadow-sm border-b" style={{ borderColor: hpDarkBlue }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <a href="/" className="flex items-center text-gray-600 hover:text-blue-800 transition-colors shrink-0">
+          <Link href="/" className="flex items-center text-gray-600 hover:text-blue-800 transition-colors shrink-0">
             <ArrowLeft className="mr-2" size={20} />
             {/* Hidden on mobile, shown on larger screens */}
             <span className="hidden sm:block">Back to Home</span>
-          </a>
+          </Link>
           <div className="flex-1 text-right pl-4 overflow-hidden">
-             {/* Truncates text with '...' if it gets too long on tiny screens */}
+            {/* Truncates text with '...' if it gets too long on tiny screens */}
             <span className="font-bold text-lg sm:text-xl truncate block" style={{ color: hpDarkBlue }}>Corporate Directory</span>
           </div>
         </div>

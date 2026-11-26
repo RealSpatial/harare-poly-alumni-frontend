@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { User, Search, MapPin, GraduationCap, ArrowLeft, Briefcase, Lock, X } from 'lucide-react';
+import Link from 'next/link';
 
 interface AlumniInfo {
   id: number;
@@ -103,10 +104,10 @@ export default function NetworkPage() {
       {/* FIX 2: Responsive Mobile Header */}
       <nav className="bg-white shadow-sm border-b border-blue-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
-          <a href="/profile" className="flex items-center text-gray-600 hover:text-blue-800 font-medium shrink-0">
-            <ArrowLeft className="mr-2" size={20} /> 
+          <Link href="/profile" className="flex items-center text-gray-600 hover:text-blue-800 font-medium shrink-0">
+            <ArrowLeft className="mr-2" size={20} />
             <span className="hidden sm:block">Back to Profile</span>
-          </a>
+          </Link>
           <div className="flex-1 text-right pl-4 overflow-hidden">
             <span className="font-bold text-lg sm:text-xl tracking-tight text-blue-900 truncate block">Alumni Directory</span>
           </div>
