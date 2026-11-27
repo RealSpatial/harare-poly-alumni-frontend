@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowLeft, UserPlus, CheckCircle2, Lock, Mail } from 'lucide-react';
+import { ArrowLeft, UserPlus, CheckCircle2, Lock, Mail, Clock, ShieldCheck } from 'lucide-react';
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -18,10 +18,24 @@ export default function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [pendingStaffRole, setPendingStaffRole] = useState<string | null>(null);
 
   const hpDarkBlue = '#1e3a8a';
   const hpLightBlue = '#3b82f6';
   const hpBackground = '#f8fafc';
+
+  // Live detection of official Harare Polytechnic staff email suffixes
+  const lowerEmail = formData.email.trim().toLowerCase();
+  const detectedStaffRole =
+    lowerEmail.endsWith('.principal@hrepoly.ac.zw') ? 'Principal' :
+    lowerEmail.endsWith('.vp@hrepoly.ac.zw') ? 'Vice Principal' :
+    lowerEmail.endsWith('.pro@hrepoly.ac.zw') ? 'Public Relations Officer (PRO)' :
+    lowerEmail.endsWith('.hod@hrepoly.ac.zw') ? 'Head of Department (HOD)' :
+    lowerEmail.endsWith('.it@hrepoly.ac.zw') ? 'IT Support' :
+    null;
+
+  const isStaff = Boolean(detectedStaffRole);
+  const isHod = lowerEmail.endsWith('.hod@hrepoly.ac.zw');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -46,11 +60,11 @@ export default function RegisterPage() {
         body: JSON.stringify({
           first_name: formData.firstName,
           last_name: formData.lastName,
-          student_id_number: formData.studentId,
-          graduation_year: parseInt(formData.graduationYear),
-          department: formData.department,
-          course_name: formData.courseName, 
-          email: formData.email,
+          student_id_number: isStaff ? '' : formData.studentId,
+          graduation_year: isStaff ? null : parseInt(formData.graduationYear),
+          department: isStaff && !isHod ? 'Administration' : formData.department,
+          course_name: isStaff ? `Staff (${detectedStaffRole})` : formData.courseName, 
+          email: formData.email.trim(),
           password: formData.password 
         }),
       });
@@ -59,6 +73,10 @@ export default function RegisterPage() {
 
       if (!response.ok) {
         throw new Error(data.error || 'Registration failed. Please check your inputs.');
+      }
+
+      if (data.pendingApproval) {
+        setPendingStaffRole(detectedStaffRole || data.role?.toUpperCase() || 'Staff');
       }
 
       setSuccess(true);
@@ -81,7 +99,9 @@ export default function RegisterPage() {
             <span className="hidden sm:block">Back to Home</span>
           </a>
           <div className="flex-1 text-right pl-4 overflow-hidden">
-            <span className="font-bold text-lg sm:text-xl truncate block" style={{ color: hpDarkBlue }}>Alumni Registration</span>
+            <span className="font-bold text-lg sm:text-xl truncate block" style={{ color: hpDarkBlue }}>
+              {isStaff ? 'Staff Portal Registration' : 'Alumni Registration'}
+            </span>
           </div>
         </div>
       </nav>
@@ -93,13 +113,27 @@ export default function RegisterPage() {
           <div className="px-6 py-8 md:p-10">
             {success ? (
               <div className="text-center py-8">
-                <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
-                  <CheckCircle2 className="h-10 w-10 text-green-600" />
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Registration Complete!</h2>
-                <p className="text-gray-600 mb-8">
-                  Welcome to the Harare Polytechnic Alumni Network. Your secure profile has been created.
-                </p>
+                {pendingStaffRole ? (
+                  <>
+                    <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-amber-100 mb-6">
+                      <Clock className="h-10 w-10 text-amber-600" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Awaiting Staff Verification</h2>
+                    <p className="text-gray-600 mb-8 leading-relaxed">
+                      Your <strong>{pendingStaffRole}</strong> account has been created and placed in the verification queue. Once IT Support or a Super Admin approves your account, you will be able to sign in.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-6">
+                      <CheckCircle2 className="h-10 w-10 text-green-600" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Registration Complete!</h2>
+                    <p className="text-gray-600 mb-8">
+                      Welcome to the Harare Polytechnic Alumni Network. Your secure profile has been created.
+                    </p>
+                  </>
+                )}
                 <a href="/login" className="w-full inline-flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-800 hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
                   Proceed to Login
                 </a>
@@ -139,6 +173,12 @@ export default function RegisterPage() {
                           className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 text-gray-900 sm:text-sm" 
                           placeholder="you@example.com" />
                       </div>
+                      {isStaff && (
+                        <div className="mt-2 flex items-center text-xs font-semibold text-blue-800 bg-blue-50 border border-blue-200 rounded-md px-3 py-2">
+                          <ShieldCheck size={15} className="mr-1.5 shrink-0" />
+                          Official {detectedStaffRole} email detected — requires admin approval after sign-up.
+                        </div>
+                      )}
                     </div>
 
                     <div>
@@ -157,7 +197,9 @@ export default function RegisterPage() {
                   </div>
 
                   <div className="space-y-4">
-                    <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide border-b pb-2">Polytechnic Details</h3>
+                    <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide border-b pb-2">
+                      {isStaff ? 'Staff Details' : 'Polytechnic Details'}
+                    </h3>
                     
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <div>
@@ -176,56 +218,65 @@ export default function RegisterPage() {
                       </div>
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">
-                        Student ID Number <span className="text-gray-400 font-normal ml-1">(Optional)</span>
-                      </label>
-                      {/* FIX 3: Added text-gray-900 */}
-                      <input type="text" name="studentId" placeholder="e.g., 2018H00123 (Leave blank if forgotten)"
-                        value={formData.studentId} onChange={handleChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 sm:text-sm p-2.5 border" />
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    {!isStaff && (
                       <div>
-                        <label className="block text-sm font-medium text-gray-700">Graduation Year</label>
+                        <label className="block text-sm font-medium text-gray-700">
+                          Student ID Number <span className="text-gray-400 font-normal ml-1">(Optional)</span>
+                        </label>
                         {/* FIX 3: Added text-gray-900 */}
-                        <input type="number" name="graduationYear" required min="1919" max="2026"
-                          value={formData.graduationYear} onChange={handleChange}
+                        <input type="text" name="studentId" placeholder="e.g., 2018H00123 (Leave blank if forgotten)"
+                          value={formData.studentId} onChange={handleChange}
                           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 sm:text-sm p-2.5 border" />
                       </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">Department</label>
-                        {/* FIX 3: Added text-gray-900 */}
-                        <select name="department" required
-                          value={formData.department} onChange={handleChange}
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 sm:text-sm p-2.5 border bg-white">
-                          <option value="">Select Department / Division</option>
-                          <option value="Applied Arts">Applied Arts</option>
-                          <option value="Automotive Engineering">Automotive Engineering</option>
-                          <option value="Business and Management Studies">Business and Management Studies</option>
-                          <option value="Civil Engineering">Civil Engineering</option>
-                          <option value="Construction Engineering">Construction Engineering</option>
-                          <option value="Information and Communication Technology">Information and Communication Technology</option>
-                          <option value="Electrical Engineering">Electrical Engineering</option>
-                          <option value="Library and Information Science">Library and Information Science</option>
-                          <option value="Mechanical and Production Engineering">Mechanical and Production Engineering</option>
-                          <option value="Printing and Graphic Arts">Printing and Graphic Arts</option>
-                          <option value="Science Technology">Science Technology</option>
-                          <option value="School of Journalism and Media Studies">School of Journalism and Media Studies</option>
-                          <option value="School of Office Management">School of Office Management</option>
-                          <option value="School of Hospitality and Tourism">School of Hospitality and Tourism</option>
-                        </select>
-                      </div>
+                    )}
+
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      {!isStaff && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">Graduation Year</label>
+                          {/* FIX 3: Added text-gray-900 */}
+                          <input type="number" name="graduationYear" required={!isStaff} min="1919" max="2026"
+                            value={formData.graduationYear} onChange={handleChange}
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 sm:text-sm p-2.5 border" />
+                        </div>
+                      )}
+
+                      {(!isStaff || isHod) && (
+                        <div className={isHod ? 'sm:col-span-2' : ''}>
+                          <label className="block text-sm font-medium text-gray-700">Department</label>
+                          {/* FIX 3: Added text-gray-900 */}
+                          <select name="department" required={!isStaff || isHod}
+                            value={formData.department} onChange={handleChange}
+                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 sm:text-sm p-2.5 border bg-white">
+                            <option value="">Select Department / Division</option>
+                            <option value="Applied Arts">Applied Arts</option>
+                            <option value="Automotive Engineering">Automotive Engineering</option>
+                            <option value="Business and Management Studies">Business and Management Studies</option>
+                            <option value="Civil Engineering">Civil Engineering</option>
+                            <option value="Construction Engineering">Construction Engineering</option>
+                            <option value="Information and Communication Technology">Information and Communication Technology</option>
+                            <option value="Electrical Engineering">Electrical Engineering</option>
+                            <option value="Library and Information Science">Library and Information Science</option>
+                            <option value="Mechanical and Production Engineering">Mechanical and Production Engineering</option>
+                            <option value="Printing and Graphic Arts">Printing and Graphic Arts</option>
+                            <option value="Science Technology">Science Technology</option>
+                            <option value="School of Journalism and Media Studies">School of Journalism and Media Studies</option>
+                            <option value="School of Office Management">School of Office Management</option>
+                            <option value="School of Hospitality and Tourism">School of Hospitality and Tourism</option>
+                          </select>
+                        </div>
+                      )}
                     </div>
 
-                    <div className="mt-4">
-                      <label className="block text-sm font-medium text-gray-700">Specific Course / Certificate</label>
-                      {/* FIX 3: Added text-gray-900 */}
-                      <input type="text" name="courseName" required placeholder="e.g., NC in Plumbing and Drainlaying"
-                        value={formData.courseName} onChange={handleChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 sm:text-sm p-2.5 border" />
-                    </div>
+                    {!isStaff && (
+                      <div className="mt-4">
+                        <label className="block text-sm font-medium text-gray-700">Specific Course / Certificate</label>
+                        {/* FIX 3: Added text-gray-900 */}
+                        <input type="text" name="courseName" required={!isStaff} placeholder="e.g., NC in Plumbing and Drainlaying"
+                          value={formData.courseName} onChange={handleChange}
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-gray-900 sm:text-sm p-2.5 border" />
+                      </div>
+                    )}
                   </div>
 
                   <div className="pt-4">
@@ -245,7 +296,7 @@ export default function RegisterPage() {
                           Encrypting & Registering...
                         </span>
                       ) : (
-                        'Secure Registration'
+                        isStaff ? 'Submit Staff Account for Approval' : 'Secure Registration'
                       )}
                     </button>
                   </div>

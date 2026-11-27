@@ -25,30 +25,57 @@ interface HodStats {
     curriculumAdvice: string;
 }
 
+const DEPARTMENTS = [
+    "Applied Arts",
+    "Automotive Engineering",
+    "Business and Management Studies",
+    "Civil Engineering",
+    "Construction Engineering",
+    "Information and Communication Technology",
+    "Electrical Engineering",
+    "Library and Information Science",
+    "Mechanical and Production Engineering",
+    "Printing and Graphic Arts",
+    "Science Technology",
+    "School of Journalism and Media Studies",
+    "School of Office Management",
+    "School of Hospitality and Tourism"
+];
+
 export default function HODDashboard() {
     const [stats, setStats] = useState<HodStats | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
+    const [userRole, setUserRole] = useState<string | null>(null);
+    const [selectedDept, setSelectedDept] = useState<string>('');
 
     const hpDarkBlue = '#1e3a8a';
     const PIE_COLORS = ['#059669', '#7c3aed', '#94a3b8']; // Emerald (Employed), Purple (Studies), Gray (Seeking)
 
-    useEffect(() => {
+    const fetchHodStats = (deptOverride?: string) => {
         const token = localStorage.getItem('token');
+        const role = localStorage.getItem('role');
         if (!token) {
             window.location.href = '/login';
             return;
         }
+        setUserRole(role);
+        setLoading(true);
+        setError(null);
 
-        // FIX 1: Cleaned the API URL (removed markdown brackets)
-        fetch('https://harare-poly-api.onrender.com/api/hod/stats', {
+        const url = role === 'super_admin' && deptOverride
+            ? `https://harare-poly-api.onrender.com/api/hod/stats?department=${encodeURIComponent(deptOverride)}`
+            : 'https://harare-poly-api.onrender.com/api/hod/stats';
+
+        fetch(url, {
             headers: { 'Authorization': `Bearer ${token}` }
         })
             .then(async res => {
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error || 'Failed to fetch HOD data');
                 setStats(data);
+                if (data.department) setSelectedDept(data.department);
                 setLoading(false);
             })
             .catch(err => {
@@ -56,14 +83,23 @@ export default function HODDashboard() {
                 setError(err.message);
                 setLoading(false);
             });
+    };
+
+    useEffect(() => {
+        fetchHodStats();
     }, []);
 
+    const handleDepartmentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newDept = e.target.value;
+        setSelectedDept(newDept);
+        fetchHodStats(newDept);
+    };
 
     if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-50"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-800"></div></div>;
 
     const employmentRate = stats && stats.totalAlumni > 0 ? Math.round((stats.totalEmployed / stats.totalAlumni) * 100) : 0;
 
-    // --- NEW: DATA PROCESSING FOR THE NEW CHARTS ---
+    // --- DATA PROCESSING FOR THE CHARTS ---
     // 1. Calculate Career Outcomes
     let seekingCount = (stats?.totalAlumni || 0) - (stats?.totalEmployed || 0) - (stats?.totalFurtherStudies || 0);
     if (seekingCount < 0) seekingCount = 0; // Failsafe
@@ -125,9 +161,28 @@ export default function HODDashboard() {
                     </div>
                 )}
 
-                <div className="mb-8">
-                    <h1 className="text-3xl font-extrabold text-gray-900">Head of Department: {stats?.department || 'Loading...'}</h1>
-                    <p className="text-gray-600 mt-2">Track the industry impact and career trajectories of your department's graduates.</p>
+                <div className="mb-8 flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+                    <div>
+                        <h1 className="text-3xl font-extrabold text-gray-900">Head of Department: {stats?.department || 'Loading...'}</h1>
+                        <p className="text-gray-600 mt-2">Track the industry impact and career trajectories of your department's graduates.</p>
+                    </div>
+
+                    {userRole === 'super_admin' && (
+                        <div className="bg-white p-3 rounded-xl border border-blue-200 shadow-sm w-full lg:w-80 shrink-0">
+                            <label className="block text-[11px] font-bold text-blue-800 uppercase tracking-wider mb-1">
+                                Inspect Department (Super Admin)
+                            </label>
+                            <select
+                                value={selectedDept}
+                                onChange={handleDepartmentChange}
+                                className="block w-full p-2 border border-gray-300 rounded-lg text-sm text-gray-900 bg-white font-medium focus:ring-blue-500 focus:border-blue-500"
+                            >
+                                {DEPARTMENTS.map(dept => (
+                                    <option key={dept} value={dept}>{dept}</option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
                 </div>
 
                 {!error && stats && (

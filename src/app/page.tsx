@@ -124,15 +124,15 @@ export default function LandingPage() {
   }, []);
 
   const getDashboardLink = () => {
-    if (userRole === 'admin') return '/dashboard';
+    if (userRole === 'super_admin' || userRole === 'it') return '/it-dashboard';
+    if (userRole === 'principal' || userRole === 'vp' || userRole === 'admin') return '/management-dashboard';
     if (userRole === 'pro') return '/pro-dashboard';
-    if (userRole === 'it') return '/it-dashboard';
-    if (userRole === 'hod') return '/hod-dashboard'; 
+    if (userRole === 'hod') return '/hod-dashboard';
     return '/profile';
   };
 
   const getDashboardText = () => {
-    if (userRole === 'admin' || userRole === 'pro' || userRole === 'it' || userRole === 'hod') return 'Command Center';
+    if (userRole && userRole !== 'alumni') return 'Command Center';
     return 'My Profile';
   };
 

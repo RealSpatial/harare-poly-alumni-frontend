@@ -11,26 +11,31 @@ export default function LoginPage() {
 
   const hpDarkBlue = '#1e3a8a';
 
-  // NEW: Auto-Redirect if already logged in!
+  const routeByRole = (role: string | null, redirectUrl: string | null) => {
+    if (redirectUrl) {
+      window.location.href = redirectUrl;
+    } else if (role === 'super_admin' || role === 'it') {
+      window.location.href = '/it-dashboard';
+    } else if (role === 'principal' || role === 'vp' || role === 'admin') {
+      window.location.href = '/management-dashboard';
+    } else if (role === 'pro') {
+      window.location.href = '/pro-dashboard';
+    } else if (role === 'hod') {
+      window.location.href = '/hod-dashboard';
+    } else {
+      window.location.href = '/profile';
+    }
+  };
+
+  // Auto-Redirect if already logged in!
   useEffect(() => {
     const token = localStorage.getItem('token');
     const role = localStorage.getItem('role');
 
     if (token && role) {
-      // Check if there's a redirect parameter in the URL
       const urlParams = new URLSearchParams(window.location.search);
       const redirectUrl = urlParams.get('redirect');
-
-      if (redirectUrl) {
-        window.location.href = redirectUrl; // If there is, go there
-      } else {
-        // Otherwise, use the default role-based routing
-        if (role === 'admin') window.location.href = '/management-dashboard';
-        else if (role === 'pro') window.location.href = '/pro-dashboard';
-        else if (role === 'it') window.location.href = '/it-dashboard';
-        else if (role === 'hod') window.location.href = '/hod-dashboard';
-        else window.location.href = '/profile';
-      }
+      routeByRole(role, redirectUrl);
     }
   }, []);
 
@@ -40,11 +45,10 @@ export default function LoginPage() {
     setError('');
 
     try {
-      // FIX 2: Corrected the malformed URL! Removed the markdown brackets.
       const res = await fetch('https://harare-poly-api.onrender.com/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: email.trim(), password }),
       });
 
       const data = await res.json();
@@ -53,29 +57,12 @@ export default function LoginPage() {
         throw new Error(data.error || 'Login failed');
       }
 
-      // Success! Save the token and role to the browser
       localStorage.setItem('token', data.token);
       localStorage.setItem('role', data.role);
-      
-      // NEW: Check if we have a "Return Ticket" in the URL after a successful login
+
       const urlParams = new URLSearchParams(window.location.search);
       const redirectUrl = urlParams.get('redirect');
-
-      // THE TRAFFIC COP ROUTING:
-      if (redirectUrl) {
-            window.location.href = redirectUrl; // Send them to the exact page they requested
-        } else if (data.role === 'admin') {
-            window.location.href = '/management-dashboard'; // Management goes to charts
-        } else if (data.role === 'pro') {
-            window.location.href = '/pro-dashboard';
-        } else if (data.role === 'it') {
-            window.location.href = '/it-dashboard';
-        } else if (data.role === 'hod') {
-            window.location.href = '/hod-dashboard'; // HOD goes to departmental analytics
-        } else {
-            window.location.href = '/profile'; // Normal users go to their personal profile
-        }
-      
+      routeByRole(data.role, redirectUrl);
     } catch (err: any) {
       setError(err.message);
       setLoading(false);
@@ -84,16 +71,14 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
-      {/* FIX 1: Responsive Mobile Header */}
+      {/* Responsive Mobile Header */}
       <nav className="bg-white shadow-sm border-b" style={{ borderColor: hpDarkBlue }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <a href="/" className="flex items-center text-gray-600 hover:text-blue-800 transition-colors font-medium shrink-0">
-            <ArrowLeft className="mr-2" size={20} /> 
-            {/* Hidden on mobile, shown on larger screens */}
+            <ArrowLeft className="mr-2" size={20} />
             <span className="hidden sm:block">Back to Home</span>
           </a>
           <div className="flex-1 text-right pl-4 overflow-hidden">
-            {/* Truncates text with '...' if it gets too long on tiny screens */}
             <span className="font-bold text-lg sm:text-xl tracking-tight truncate block" style={{ color: hpDarkBlue }}>
               Harare Poly <span className="font-light">Alumni Network</span>
             </span>
@@ -106,7 +91,7 @@ export default function LoginPage() {
         <div className="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 p-8 md:p-10">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-extrabold text-gray-900 mb-2">Welcome Back</h2>
-            <p className="text-gray-600 text-sm">Sign in to your alumni account</p>
+            <p className="text-gray-600 text-sm">Sign in to your account</p>
           </div>
 
           {error && (
@@ -123,7 +108,6 @@ export default function LoginPage() {
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Mail className="h-5 w-5 text-gray-400" />
                 </div>
-                {/* FIX 3: Added text-gray-900 so typed text is dark and visible */}
                 <input 
                   type="email" 
                   required 
@@ -141,7 +125,6 @@ export default function LoginPage() {
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-5 w-5 text-gray-400" />
                 </div>
-                {/* FIX 3: Added text-gray-900 so typed text is dark and visible */}
                 <input 
                   type="password" 
                   required 
